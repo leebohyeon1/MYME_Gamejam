@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using DG.Tweening;
 
 public class TitleUI : MonoBehaviour
 {
+    public GameObject title;
     //==========================================================
 
     void Start()
     {
-       
+        title.transform.DOPunchScale(new Vector3(0.5f,0.5f,0.5f),2f,2,0).SetEase(Ease.InCubic);
     }
 
 

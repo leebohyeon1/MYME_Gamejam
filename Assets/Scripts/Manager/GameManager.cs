@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
     //=========================================================
     [Header("Á¡¼ö")]
     public int score = 0;
@@ -23,13 +24,20 @@ public class GameManager : MonoBehaviour
     public Transform[] boxSpawnPoints;
     public GameObject boxPrefab;
     public List<GameObject> boxList = new List<GameObject>();
-    private float boxSpawnTimer;
+    private float boxSpawnTimer = 0f;
 
     [Header("ÀÚµ¿Â÷")]
     public Transform carSpawnPoint;
     public GameObject CarPrefab;
     public float carSpawnInterval = 2f;
-    private float carSpawnTimer;
+    private float carSpawnTimer = 0f;
+
+    [Header("ÆøÅº")]
+    public Vector2 explosionPoint;
+    public GameObject dynamitePrefab;
+    public float explosionSpawnInterval = 2f;
+    private float dynamiteSpawnTimer = 0f;
+    private GameObject target;
 
     void Start()
     {
@@ -42,6 +50,7 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
+        target = FindObjectOfType<PlayerController>().gameObject;
     }
 
     // Update is called once per frame
@@ -67,6 +76,13 @@ public class GameManager : MonoBehaviour
         {
             SpawnCar();
             carSpawnTimer = 0f;
+        }
+
+        dynamiteSpawnTimer += Time.deltaTime;
+        if(dynamiteSpawnTimer >= explosionSpawnInterval)
+        {
+            Bomb();
+            dynamiteSpawnTimer = 0f;
         }
     }
     public void SpawnBox()
@@ -129,5 +145,12 @@ public class GameManager : MonoBehaviour
     public void SpawnCar()
     {
         Instantiate(CarPrefab, carSpawnPoint.position,Quaternion.identity);
+    }
+
+    public void Bomb()
+    {
+        explosionPoint = new Vector2(target.transform.position.x, target.transform.position.y -1);
+
+        Instantiate(dynamitePrefab, explosionPoint, Quaternion.identity);
     }
 }
