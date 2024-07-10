@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Box
   - Delivery
+  - Enemy
   layers:
   - Default
   - TransparentFX

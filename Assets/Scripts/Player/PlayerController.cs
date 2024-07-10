@@ -41,15 +41,20 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag("Delivery"))
+        if (collision.CompareTag("Delivery"))
         {
             DropBox();
             GameManager.Instance.DeactivateLocation(collision.gameObject);
         }
+
+        if (collision.CompareTag("Enemy"))
+        {
+            gameObject.SetActive(false);
+        }
     }
     public Vector2 GetVector()
-    {
-        
+    {        
         return movement.normalized;
     }
+
 }
