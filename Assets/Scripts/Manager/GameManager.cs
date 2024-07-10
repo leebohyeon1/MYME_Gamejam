@@ -23,8 +23,13 @@ public class GameManager : MonoBehaviour
     public Transform[] boxSpawnPoints;
     public GameObject boxPrefab;
     public List<GameObject> boxList = new List<GameObject>();
-    private float spawnTimer;
+    private float boxSpawnTimer;
 
+    [Header("ÀÚµ¿Â÷")]
+    public Transform carSpawnPoint;
+    public GameObject CarPrefab;
+    public float carSpawnInterval = 2f;
+    private float carSpawnTimer;
 
     void Start()
     {
@@ -50,11 +55,18 @@ public class GameManager : MonoBehaviour
             timer = 0f;
         }
        
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= 1f)
+        boxSpawnTimer += Time.deltaTime;
+        if (boxSpawnTimer >= 1f)
         {
             SpawnBox();
-            spawnTimer = 0f;
+            boxSpawnTimer = 0f;
+        }
+
+        carSpawnTimer += Time.deltaTime;
+        if (carSpawnTimer >= carSpawnInterval)
+        {
+            SpawnCar();
+            carSpawnTimer = 0f;
         }
     }
     public void SpawnBox()
@@ -66,9 +78,9 @@ public class GameManager : MonoBehaviour
                 int index = Random.Range(0, boxSpawnPoints.Length);
                 if (boxSpawnPoints[index].childCount == 0)
                 {
-                    GameObject box = Instantiate(boxPrefab, boxSpawnPoints[index]);
+                    GameObject box = Instantiate(boxPrefab, boxSpawnPoints[index].position,Quaternion.identity);
                     box.transform.SetParent(boxSpawnPoints[index], true);
-                    box.transform.localPosition = Vector2.zero;
+                    //box.transform.localPosition = Vector2.zero;
                    boxList.Add(box);
                     break;
                 }
@@ -76,7 +88,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void RemoveList(GameObject box)
+    public void RemoveBoxList(GameObject box)
     {
         for(int i = 0; i < boxList.Count; i++)
         {
@@ -86,6 +98,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
     public void ActivateLocation()
     {
         if (activeLocationsCount < maxBox)
@@ -111,5 +124,10 @@ public class GameManager : MonoBehaviour
         activeLocationsCount--;
         boxCount++;
         UIManager.Instance.UpdateBoxText(boxCount);
+    }
+
+    public void SpawnCar()
+    {
+        Instantiate(CarPrefab, carSpawnPoint.position,Quaternion.identity);
     }
 }

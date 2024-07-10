@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         --curBox;
         Destroy(transform.GetChild(curBox).gameObject);
-        GameManager.Instance.RemoveList(transform.GetChild(curBox).gameObject);
+        GameManager.Instance.RemoveBoxList(transform.GetChild(curBox).gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
