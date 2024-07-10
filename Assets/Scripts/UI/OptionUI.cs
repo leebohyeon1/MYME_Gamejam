@@ -157,6 +157,7 @@ public class OptionUI : MonoBehaviour
     public void SaveBtn()
     {
         SaveOption();
+        Time.timeScale = 1f;
         UIManager.Instance.OptionUISet(false);
     }
 

@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public int curBox;
 
     private Rigidbody2D rb;
+    Vector2 movement;
 
     void Start()
     {
@@ -21,7 +22,7 @@ public class PlayerController : MonoBehaviour
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
         float moveVertical = Input.GetAxisRaw("Vertical");
 
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+        movement = new Vector2(moveHorizontal, moveVertical);
         rb.velocity = movement * speed;
     }
 
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         --curBox;
         Destroy(transform.GetChild(curBox).gameObject);
+        GameManager.Instance.RemoveList(transform.GetChild(curBox).gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -44,5 +46,10 @@ public class PlayerController : MonoBehaviour
             DropBox();
             GameManager.Instance.DeactivateLocation(collision.gameObject);
         }
+    }
+    public Vector2 GetVector()
+    {
+        
+        return movement.normalized;
     }
 }

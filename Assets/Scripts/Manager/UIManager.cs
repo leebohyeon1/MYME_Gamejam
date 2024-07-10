@@ -56,6 +56,7 @@ public class UIManager : MonoBehaviour, IListener
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             OptionUISet();
+            Time.timeScale = 0f;
         }
     }
     public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
@@ -71,7 +72,7 @@ public class UIManager : MonoBehaviour, IListener
 
     public void OptionUISet(bool On = true)
     {
-        optionUI.gameObject.SetActive(On);
+        optionUI.gameObject.SetActive(On);        
     }
 
     public void GameUISet(bool On = true)
