@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             gameObject.SetActive(false);
+            EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
+            GameManager.Instance.isGameOver = true;
         }
     }
 
@@ -58,6 +60,8 @@ public class PlayerController : MonoBehaviour
         if (collision.CompareTag("Enemy"))
         {
             gameObject.SetActive(false);
+            EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
+            GameManager.Instance.isGameOver = true;
         }
     }
     public Vector2 GetVector()

@@ -11,7 +11,7 @@ public class Bomb : MonoBehaviour
     void Start()
     {
         transform.DOScale(new Vector3(transform.localScale.x * 5, transform.localScale.y * 5,
-            transform.localScale.z * 5), 2f).SetEase(Ease.InQuad).OnComplete(()=> Attack());
+            transform.localScale.z * 5), 1.5f).SetEase(Ease.InQuad).OnComplete(()=> Attack());
     }
 
     void Attack()

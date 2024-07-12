@@ -977,7 +977,7 @@ Transform:
   - {fileID: 7347404676173116987}
   - {fileID: 4058004870399766389}
   m_Father: {fileID: 0}
-  m_RootOrder: -2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6542001584395276883
 MonoBehaviour:
@@ -992,9 +992,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 0
-  scoreInterval: 0.1
+  scoreInterval: 0.05
   maxBox: 3
   boxCount: 0
+  totalScore: 0
+  isGameOver: 0
   deliveryPoints:
   - {fileID: 5244261789967215260}
   - {fileID: 5144578391533536091}
@@ -1019,6 +1021,23 @@ MonoBehaviour:
   explosionPoint: {x: 0, y: 0}
   dynamitePrefab: {fileID: 8727062178168139052, guid: 35d5bffb254bd4b4680e9d50142d51d4, type: 3}
   explosionSpawnInterval: 2
+  Zombie:
+  - {fileID: 2938736135833769221, guid: c0db751c9c327da42912a54a583d3f3a, type: 3}
+  - {fileID: 6283575411202167504, guid: 95651fc54bea43e4baa039bc63945a3c, type: 3}
+  - {fileID: 831924797847014874, guid: 8006346ee251179459d78fd13fafa055, type: 3}
+  - {fileID: 8178169406747855263, guid: c249d55c1a0ac5d41b6a91515f2c331b, type: 3}
+  ZombieList:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  mainCamera: {fileID: 0}
+  ZombieSpawnInterval: 10
+  mapMinX: 0
+  mapMaxX: 0
+  mapMinY: 0
+  mapMaxY: 0
+  spawnDistance: 10
 --- !u!1 &6562195462859366891
 GameObject:
   m_ObjectHideFlags: 0
