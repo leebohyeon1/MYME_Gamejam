@@ -27,10 +27,13 @@ public class GameUI : MonoBehaviour
     float curNum = 0f;
 
     bool isTotalCalculate;
+
+    public Camera mainCamera; // 메인 카메라
+    public Image[] indicator;
     // Start is called before the first frame update
     void Start()
     {
-        
+        mainCamera = Camera.main;
     }
 
     // Update is called once per frame
@@ -44,7 +47,8 @@ public class GameUI : MonoBehaviour
             totalScoreText.text = curNum.ToString();
             SetBtn();
         }
-        
+
+        BoxIndicator();
     }
 
     public void UpdateScore(int score)
@@ -102,5 +106,37 @@ public class GameUI : MonoBehaviour
     public void ExitBtn()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void BoxIndicator()
+    {
+        for(int i = 0; i < GameManager.Instance.boxList.Count; i++)
+        {
+            Vector3 screenPoint = mainCamera.WorldToViewportPoint(GameManager.Instance.boxList[i].transform.position);
+            bool isOffScreen = screenPoint.x <= 0 || screenPoint.x >= 1 || screenPoint.y <= 0 || screenPoint.y >= 1;
+
+            // UI 요소 활성화/비활성화
+            indicator[i].gameObject.SetActive(isOffScreen);
+
+            if (isOffScreen)
+            {
+                // 화면 경계 내로 screenPoint 조정
+                screenPoint.x = Mathf.Clamp(screenPoint.x, 0.05f, 0.95f);
+                screenPoint.y = Mathf.Clamp(screenPoint.y, 0.05f, 0.95f);
+                screenPoint.z = 0;
+
+                // UI 위치 업데이트
+                Vector3 screenPosition = mainCamera.ViewportToScreenPoint(screenPoint);
+                indicator[i].transform.position = screenPosition;
+
+                // 방향 계산 및 설정
+                Vector3 toPosition = mainCamera.ScreenToWorldPoint(screenPosition);
+                Vector3 fromPosition = mainCamera.transform.position;
+                Vector3 direction = (toPosition - fromPosition).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                indicator[i].rectTransform.rotation = Quaternion.Euler(0, 0, angle - 90);
+            }
+        }
+        
     }
 }

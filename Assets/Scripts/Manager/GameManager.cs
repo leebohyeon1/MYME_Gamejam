@@ -119,18 +119,7 @@ public class GameManager : MonoBehaviour
     {
         if (boxList.Count < maxBox)
         {
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    int index = Random.Range(0, boxSpawnPoints.Length);
-            //    if (boxSpawnPoints[index].childCount == 0)
-            //    {
-            //        GameObject box = Instantiate(boxPrefab, boxSpawnPoints[index].position,Quaternion.identity);
-            //        box.transform.SetParent(boxSpawnPoints[index], true);
-            //        //box.transform.localPosition = Vector2.zero;
-            //       boxList.Add(box);
-            //        break;
-            //    }
-            //}
+
             Vector3 spawnPosition;
             if (TryGetRandomNavMeshLocation(out spawnPosition))
             {
@@ -245,8 +234,8 @@ public class GameManager : MonoBehaviour
             attempts--;
             Vector3 randomPosition = new Vector3(
                 Random.Range(bounds.min.x, bounds.max.x),
-                0,  // Y 축은 평면 게임의 경우 0 또는 특정 Y 축 값 설정
-                Random.Range(bounds.min.y, bounds.max.y)
+                Random.Range(bounds.min.y, bounds.max.y), 0  // Y 축은 평면 게임의 경우 0 또는 특정 Y 축 값 설정
+                
             );
 
             NavMeshHit hit;

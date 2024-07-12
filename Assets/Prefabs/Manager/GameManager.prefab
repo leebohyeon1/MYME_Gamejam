@@ -1005,14 +1005,6 @@ MonoBehaviour:
   - {fileID: 1422205535158243425}
   - {fileID: 4383411141851491120}
   - {fileID: 6562195462859366891}
-  boxSpawnPoints:
-  - {fileID: 6624863333627182385}
-  - {fileID: 4400675788990171126}
-  - {fileID: 4532975157502044351}
-  - {fileID: 5282483423081623209}
-  - {fileID: 5247917506729719999}
-  - {fileID: 7798976025812083239}
-  - {fileID: 5201560791903958211}
   boxPrefab: {fileID: 5410754739146455909, guid: a1347d47140a4f14e909b2befd3686af, type: 3}
   boxList: []
   carSpawnPoint: {fileID: 4058004870399766389}
@@ -1020,7 +1012,7 @@ MonoBehaviour:
   carSpawnInterval: 2
   explosionPoint: {x: 0, y: 0}
   dynamitePrefab: {fileID: 8727062178168139052, guid: 35d5bffb254bd4b4680e9d50142d51d4, type: 3}
-  explosionSpawnInterval: 2
+  explosionSpawnInterval: 0.7
   Zombie:
   - {fileID: 2938736135833769221, guid: c0db751c9c327da42912a54a583d3f3a, type: 3}
   - {fileID: 6283575411202167504, guid: 95651fc54bea43e4baa039bc63945a3c, type: 3}
@@ -1033,10 +1025,7 @@ MonoBehaviour:
   - {fileID: 0}
   mainCamera: {fileID: 0}
   ZombieSpawnInterval: 10
-  mapMinX: 0
-  mapMaxX: 0
-  mapMinY: 0
-  mapMaxY: 0
+  background: {fileID: 0}
   spawnDistance: 10
 --- !u!1 &6562195462859366891
 GameObject:

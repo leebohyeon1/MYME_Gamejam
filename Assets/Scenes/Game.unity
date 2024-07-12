@@ -4913,17 +4913,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1716253484492586369, guid: a5ef1e5dd7464174195899201f384524, type: 3}
-      propertyPath: speed
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 2321162032043478208, guid: a5ef1e5dd7464174195899201f384524, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 2696903800473444553, guid: a5ef1e5dd7464174195899201f384524, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5389823050499246645, guid: a5ef1e5dd7464174195899201f384524, type: 3}
       propertyPath: m_RootOrder
@@ -5099,10 +5091,6 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 6542001584395276883, guid: f9af1552d64914a41869596096e99f60, type: 3}
-      propertyPath: explosionSpawnInterval
-      value: 0.7
-      objectReference: {fileID: 0}
     - target: {fileID: 6542001584395276883, guid: f9af1552d64914a41869596096e99f60, type: 3}
       propertyPath: ZombieList.Array.data[0]
       value: 

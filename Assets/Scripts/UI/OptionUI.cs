@@ -20,6 +20,16 @@ public class OptionUI : MonoBehaviour
     int resolutionIndex;
     int screenModeIndex;
 
+
+    [Header("Sound")]
+    public Slider BGMSlider;
+    public Slider SFXSlider;
+
+    public AudioSource backgroundMusicSource;
+    public AudioSource[] sfxSource;
+
+   
+
     //==========================================================
 
     void Start()
@@ -29,6 +39,15 @@ public class OptionUI : MonoBehaviour
 
         SetInitialResolution();
         SaveOption();
+
+   
+
+
+      
+
+        // 슬라이더 이벤트 리스너 추가
+        BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
+        SFXSlider.onValueChanged.AddListener(SetSFXVolume);
     }
 
     void Update()
@@ -98,12 +117,25 @@ public class OptionUI : MonoBehaviour
                     break;
                 }
             }
+
+            BGMSlider.value = 0.5f;
+            SFXSlider.value = 0.5f;
         }
         else
         {
             // 저장된 값이 있을 경우 그 값으로 설정
             SetResolution(savedResolutionIndex);
+
+            // 초기 슬라이더 값 설정
+            SetBackgroundMusicVolume(BGMSlider.value);
+
+            for (int i = 0; i < sfxSource.Length; i++)
+            {
+                SetSFXVolume(SFXSlider.value);
+            }
         }
+
+     
     }
 
     #endregion
@@ -177,7 +209,9 @@ public class OptionUI : MonoBehaviour
     {
         PlayerPrefs.SetInt("resolution",resolutionIndex);
         PlayerPrefs.SetInt("screenMode", screenModeIndex);
-        PlayerPrefs.Save();
+        PlayerPrefs.SetFloat("BGMVolume", BGMSlider.value);
+        PlayerPrefs.SetFloat("SFXVolume", SFXSlider.value);
+       PlayerPrefs.Save();
     }
 
     void ResetOption()
@@ -189,7 +223,26 @@ public class OptionUI : MonoBehaviour
         resolutionDropdown.value = resolutionIndex;
 
         ChangeFullScreenMode((ScreenMode)screenModeIndex);
-        ScreenModeDropdown.value = screenModeIndex;   
+        ScreenModeDropdown.value = screenModeIndex;
+
+        BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");
+        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
+    }
+
+    public void SetBackgroundMusicVolume(float volume)
+    {
+        backgroundMusicSource.volume = volume;
+        PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        for (int i = 0; i < sfxSource.Length; i++)
+        {
+            sfxSource[i].volume = volume;
+           
+        }
+        PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
     }
 }
 
@@ -207,3 +260,5 @@ public class ResolutionComparer : IEqualityComparer<Resolution>
         return obj.width.GetHashCode() ^ obj.height.GetHashCode();
     }
 }
+
+
