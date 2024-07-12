@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     public void GetBox()
     {
         curBox++;
-        GameManager.Instance.SpawnBox();
+        GameManager.Instance.ActivateLocation();
     }
 
     public void DropBox()

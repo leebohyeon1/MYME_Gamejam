@@ -1,142 +1,184 @@
 using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameUI : MonoBehaviour
 {
-    public TMP_Text scoreText;
-    public TMP_Text BoxText;
-
+    public TMP_Text scoreText, BoxText, scoreText2, BoxText2, totalScoreText;
     public GameObject Panel;
-
-    public TMP_Text scoreText2;
-    public TMP_Text BoxText2;
-    public TMP_Text totalScoreText;
-
     public Button[] Btn;
-
-    private int Score;
-    private int Box;
-    private float total;
-    float curNum = 0f;
-
-    bool isTotalCalculate;
-
-    public Camera mainCamera; // 메인 카메라
+    public Camera mainCamera;
     public Image[] indicator;
-    // Start is called before the first frame update
-    void Start()
+
+    private const string ScorePrefix = "Score: ";
+    private const string BoxPrefix = "Box: ";
+    private int score, box;
+    private float totalScore;
+    private float curNum, scoreTimer, timer;
+    private bool isTotalCalculated;
+
+    private void Start()
     {
         mainCamera = Camera.main;
+        UpdateUI();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if(isTotalCalculate && Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
+        if (isTotalCalculated && AnyKeyExceptWASD())
         {
-            scoreText2.rectTransform.localScale = new Vector3(1f, 1f,1f);
-            BoxText2.rectTransform.localScale = new Vector3(1f,1f,1f);
-            curNum = total;
+            ResetScale(scoreText2.rectTransform);
+            ResetScale(BoxText2.rectTransform);
+
+            isTotalCalculated = false;
+            scoreTimer = 4f;
+            curNum = totalScore;
             totalScoreText.text = curNum.ToString();
-            SetBtn();
+            SetButtons(true);
         }
 
-        BoxIndicator();
+        if (isTotalCalculated)
+        {
+            scoreTimer += Time.deltaTime;
+            if (scoreTimer > 0.9f)
+            {
+                if (scoreTimer > 2f)
+                {
+                    totalScoreText.text = totalScore.ToString();
+                    isTotalCalculated = false;
+                    return;
+                }
+
+                UpdateTotalScoreUI();
+            }
+        }
+        UpdateBoxIndicators();
+    }
+
+    private void UpdateTotalScoreUI()
+    {
+        timer += Time.deltaTime;
+        if (timer > 0.05f)
+        {
+            totalScoreText.text = GenerateRandomNumbers(totalScore.ToString().Length);
+            timer = 0f;
+        }
+    }
+
+    private string GenerateRandomNumbers(int length)
+    {
+        string randomNumbers = "";
+        for (int i = 0; i < length; i++)
+        {
+            randomNumbers += Random.Range(0, 10).ToString();
+        }
+        return randomNumbers;
+    }
+
+    private bool AnyKeyExceptWASD()
+    {
+        return Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D);
+    }
+
+    private void ResetScale(RectTransform rectTransform)
+    {
+        rectTransform.localScale = Vector3.one;
+    }
+
+    private void UpdateBoxIndicators()
+    {
+        for (int i = 0; i < GameManager.Instance.boxList.Count; i++)
+        {
+            Vector3 screenPoint = mainCamera.WorldToViewportPoint(GameManager.Instance.boxList[i].transform.position);
+            bool isOffScreen = screenPoint.x <= 0 || screenPoint.x >= 1 || screenPoint.y <= 0 || screenPoint.y >= 1;
+            indicator[i].gameObject.SetActive(isOffScreen);
+
+            if (isOffScreen)
+            {
+                UpdateIndicatorPosition(screenPoint, i);
+            }
+        }
+    }
+
+    private void UpdateIndicatorPosition(Vector3 screenPoint, int index)
+    {
+        screenPoint.x = Mathf.Clamp(screenPoint.x, 0.05f, 0.95f);
+        screenPoint.y = Mathf.Clamp(screenPoint.y, 0.05f, 0.95f);
+        screenPoint.z = 0;
+
+        Vector3 screenPosition = mainCamera.ViewportToScreenPoint(screenPoint);
+        indicator[index].transform.position = screenPosition;
+
+        Vector3 direction = (mainCamera.ScreenToWorldPoint(screenPosition) - mainCamera.transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        indicator[index].rectTransform.rotation = Quaternion.Euler(0, 0, angle - 90);
     }
 
     public void UpdateScore(int score)
     {
-        Score = score;
-        scoreText.text = "Score: " + score;
+        this.score = score;
+        scoreText.text = ScorePrefix + score;
     }
 
     public void UpdateBox(int box)
     {
- 
-        Box = box;
-        
-        BoxText.text = "Box: " + box;
+        this.box = box;
+        BoxText.text = BoxPrefix + box;
     }
 
     public IEnumerator GameOver()
     {
         yield return new WaitForSeconds(0.3f);
-        isTotalCalculate = true;
-        yield return new WaitForSeconds(0.1f); 
+        isTotalCalculated = true;
+        yield return new WaitForSeconds(0.1f);
         scoreText2.text = scoreText.text;
         BoxText2.text = BoxText.text;
-        if (Box == 0)
-        {
-            Box = 1;
-        }
-        total = Score * Box;
-        scoreText2.rectTransform.DOScale(new Vector3(1, 1, 1), 1f).SetEase(Ease.OutBack);
+        totalScore = (box == 0 ? 1 : box) * score;
+        scoreText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.4f);
-        BoxText2.rectTransform.DOScale(new Vector3(1, 1, 1), 1f).SetEase(Ease.OutBack);
-        yield return new WaitForSeconds(0.4f);
-        
+        BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
+        yield return new WaitForSeconds(1.5f);
 
-        while(curNum < total)
-        {
-            curNum++;
-            yield return new WaitForSeconds(0.05f);
-            totalScoreText.text = curNum.ToString();
-        }
-
-        SetBtn();
+        SetButtons(true);
     }
 
-    public void SetBtn()
+    private void AnimateScoreText()
     {
-        Btn[0].gameObject.SetActive(true);
-        Btn[1].gameObject.SetActive(true);
+       
+        BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
+    }
+
+    public void SetButtons(bool active)
+    {
+        foreach (var button in Btn)
+        {
+            button.gameObject.SetActive(active);
+        }
     }
 
     public void RetryBtn()
     {
         SceneManager.LoadScene(1);
     }
+
     public void ExitBtn()
     {
         SceneManager.LoadScene(0);
     }
 
-    public void BoxIndicator()
+    private void UpdateUI()
     {
-        for(int i = 0; i < GameManager.Instance.boxList.Count; i++)
+        // 초기 점수와 박스 수를 UI에 설정합니다.
+        scoreText.text = "Score: " + score;
+        BoxText.text = "Box: " + box;
+
+        // 버튼과 기타 UI 컴포넌트들의 초기 상태를 설정할 수 있습니다.
+        foreach (var button in Btn)
         {
-            Vector3 screenPoint = mainCamera.WorldToViewportPoint(GameManager.Instance.boxList[i].transform.position);
-            bool isOffScreen = screenPoint.x <= 0 || screenPoint.x >= 1 || screenPoint.y <= 0 || screenPoint.y >= 1;
-
-            // UI 요소 활성화/비활성화
-            indicator[i].gameObject.SetActive(isOffScreen);
-
-            if (isOffScreen)
-            {
-                // 화면 경계 내로 screenPoint 조정
-                screenPoint.x = Mathf.Clamp(screenPoint.x, 0.05f, 0.95f);
-                screenPoint.y = Mathf.Clamp(screenPoint.y, 0.05f, 0.95f);
-                screenPoint.z = 0;
-
-                // UI 위치 업데이트
-                Vector3 screenPosition = mainCamera.ViewportToScreenPoint(screenPoint);
-                indicator[i].transform.position = screenPosition;
-
-                // 방향 계산 및 설정
-                Vector3 toPosition = mainCamera.ScreenToWorldPoint(screenPosition);
-                Vector3 fromPosition = mainCamera.transform.position;
-                Vector3 direction = (toPosition - fromPosition).normalized;
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                indicator[i].rectTransform.rotation = Quaternion.Euler(0, 0, angle - 90);
-            }
+            button.gameObject.SetActive(false);  // 게임 시작 시 버튼을 숨깁니다.
         }
-        
     }
 }

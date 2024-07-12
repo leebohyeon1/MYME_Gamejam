@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public float totalScore;
     public bool isGameOver;
     
+    
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;
     private int activeLocationsCount = 0;
