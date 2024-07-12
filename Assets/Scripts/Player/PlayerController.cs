@@ -39,6 +39,14 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.RemoveBoxList(transform.GetChild(curBox).gameObject);
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Delivery"))

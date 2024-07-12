@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     [Space(10f)]
     public int maxBox = 3;
     public int boxCount = 0;
+    [Space(10f)]
+    public float totalScore;
 
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;

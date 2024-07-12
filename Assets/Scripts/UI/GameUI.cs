@@ -31,4 +31,9 @@ public class GameUI : MonoBehaviour
     {
         BoxText.text = "Box: " + box;
     }
+
+    public void TotalScore(int box, int score)
+    {
+
+    }
 }
