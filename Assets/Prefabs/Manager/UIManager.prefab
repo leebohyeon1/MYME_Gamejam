@@ -6497,10 +6497,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 3946003175149216877}
   BoxText: {fileID: 6410861812195332070}
-  Panel: {fileID: 6021391147440812551}
   scoreText2: {fileID: 8382041428283977585}
   BoxText2: {fileID: 1728488710948979298}
   totalScoreText: {fileID: 4708506605953925347}
+  Panel: {fileID: 6021391147440812551}
   Btn:
   - {fileID: 7757591991574774204}
   - {fileID: 5680069757809028480}

@@ -20,6 +20,7 @@ public class GameUI : MonoBehaviour
     private float curNum, scoreTimer, timer;
     private bool isTotalCalculated;
 
+    
     private void Start()
     {
         mainCamera = Camera.main;
@@ -36,6 +37,10 @@ public class GameUI : MonoBehaviour
             isTotalCalculated = false;
             scoreTimer = 4f;
             curNum = totalScore;
+            if (totalScore > GameManager.Instance.BestScore)
+            {
+                totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
+            }
             totalScoreText.text = curNum.ToString();
             SetButtons(true);
         }
@@ -45,13 +50,21 @@ public class GameUI : MonoBehaviour
             scoreTimer += Time.deltaTime;
             if (scoreTimer > 0.9f)
             {
-                if (scoreTimer > 2f)
+                if (scoreTimer > 1.4f)
                 {
-                    totalScoreText.text = totalScore.ToString();
-                    isTotalCalculated = false;
-                    return;
-                }
+                    if (totalScore > GameManager.Instance.BestScore)
+                    {
+                        totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
+                    }
 
+                    if (scoreTimer > 2f)
+                    {
+                        totalScoreText.text = totalScore.ToString();
+                        isTotalCalculated = false;
+                        return;
+                    }
+                    
+                }
                 UpdateTotalScoreUI();
             }
         }

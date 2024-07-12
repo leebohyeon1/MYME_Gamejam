@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     [Space(10f)]
     public float totalScore;
     public bool isGameOver;
-    
+    public float BestScore = 0;
     
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;
