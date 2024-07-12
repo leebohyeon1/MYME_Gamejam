@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3675428837243664083}
   - component: {fileID: 7691513673196724148}
   - component: {fileID: 951516336068283467}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Car
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -27,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6086210449438516449}
-  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 28.6133, y: 0.1158, z: 0}
   m_LocalScale: {x: 3.8074782, y: 1.6624674, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3248432441006244855
 SpriteRenderer:
