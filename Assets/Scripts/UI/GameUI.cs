@@ -4,10 +4,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class GameUI : MonoBehaviour
 {
-    public TMP_Text scoreText, BoxText, scoreText2, BoxText2, totalScoreText;
+    public TMP_Text scoreText, BoxText, scoreText2, BoxText2, totalScoreText,CountText;
     public GameObject Panel;
     public Button[] Btn;
     public Camera mainCamera;
@@ -25,6 +26,8 @@ public class GameUI : MonoBehaviour
     private float curNum, scoreTimer, timer;
     private bool isTotalCalculated;
 
+    int Count = 3;
+
     private void Awake()
     {
         nameT = nameInput.GetComponent<TMP_InputField>().text;
@@ -33,6 +36,13 @@ public class GameUI : MonoBehaviour
     {
         mainCamera = Camera.main;
         UpdateUI();
+
+        if(PlayerPrefs.GetInt("Count", 0) == 1)
+        {
+            CountText.gameObject.SetActive(true);
+            GameManager.Instance.isCount = true;
+            StartCoroutine(CountDown());
+        }
     }
 
     private void Update()
@@ -200,6 +210,7 @@ public class GameUI : MonoBehaviour
     public void RetryBtn()
     {
         SceneManager.LoadScene(1);
+        PlayerPrefs.SetInt("Count", 0);
     }
 
     public void ExitBtn()
@@ -218,5 +229,17 @@ public class GameUI : MonoBehaviour
         {
             button.gameObject.SetActive(false);  // 게임 시작 시 버튼을 숨깁니다.
         }
+    }
+
+    public IEnumerator CountDown()
+    {
+        for(int i = 0; i < 3; i++)
+        {
+            CountText.text = Count.ToString();
+            yield return new WaitForSeconds(1f);
+            Count--;
+        }
+        CountText.gameObject.SetActive(false);
+        GameManager.Instance.isCount = false;
     }
 }

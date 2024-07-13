@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(!isDead)
+        if(!isDead && !GameManager.Instance.isCount)
         {
             Move();
         }

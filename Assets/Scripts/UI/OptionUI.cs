@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class OptionUI : MonoBehaviour
@@ -200,7 +201,7 @@ public class OptionUI : MonoBehaviour
 
     public void ExitBtn()
     {
-       Application.Quit();
+        SceneManager.LoadScene(0);
     }
     #endregion
     //==========================================================

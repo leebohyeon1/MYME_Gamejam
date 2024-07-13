@@ -57,6 +57,8 @@ public class GameManager : MonoBehaviour
 
     public float spawnDistance = 10.0f;
 
+    public bool isCount;
+
     void Start()
     {
 
@@ -82,7 +84,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!isGameOver && SceneManager.GetActiveScene().buildIndex != 0)
+        if(!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
         {
             timer += Time.deltaTime;
             if (timer >= scoreInterval)
