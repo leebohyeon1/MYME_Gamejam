@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
-public class Blinky : MonoBehaviour
+public class Blinky : MonoBehaviour,IListener
 {
     [SerializeField] GameObject target;
 
@@ -38,12 +38,16 @@ public class Blinky : MonoBehaviour
         {
             StartCoroutine(Move(0.1f));
         }
-
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-
+    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+    {
+        agent.ResetPath();
+        canMove = false;
+    }
     IEnumerator Move(float i)
     {
         yield return new WaitForSeconds(i);

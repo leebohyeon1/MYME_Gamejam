@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Car : MonoBehaviour
+public class Car : MonoBehaviour, IListener
 {
     Rigidbody2D rb;
 
@@ -23,8 +24,13 @@ public class Car : MonoBehaviour
         }
 
         AudioManager.instance.PlaySfx(AudioManager.Sfx.Car);
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
     }
 
+    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+    {
+        rb.velocity = Vector2.zero;
+    }
     // Update is called once per frame
     void Update()
     {

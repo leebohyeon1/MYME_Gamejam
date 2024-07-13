@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Clyde : MonoBehaviour
+public class Clyde : MonoBehaviour, IListener
 {
     [SerializeField] GameObject target;
 
@@ -41,9 +41,15 @@ public class Clyde : MonoBehaviour
         {
             StartCoroutine(Move(0.1f));
         }
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+    }
+    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+    {
+        agent.ResetPath();
+        canMove = false;
     }
     IEnumerator Move(float i)
     {

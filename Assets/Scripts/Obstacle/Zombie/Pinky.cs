@@ -1,28 +1,27 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-public class Inky : MonoBehaviour
+
+public class Pinky : MonoBehaviour, IListener
 {
     [SerializeField] GameObject target;
-
     NavMeshAgent agent;
+    SpriteRenderer spriteRenderer;
 
-    public float distance = 2f;
-
-    GameObject blinky;
+    public float distance = 4f;
     public bool isBite = false;
     public bool canMove = false;
     private const float MOVE_DELAY = 1f;
+
     void Start()
     {
         if (target == null)
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-        blinky = FindAnyObjectByType<Blinky>().gameObject;
+
         if (PlayerPrefs.HasKey("Count"))
         {
             if (PlayerPrefs.GetInt("Count") == 1)
@@ -38,46 +37,42 @@ public class Inky : MonoBehaviour
         {
             StartCoroutine(Move(0.1f));
         }
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
+
+        agent = GetComponent<NavMeshAgent>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         agent.updateRotation = false;
         agent.updateUpAxis = false;
+    }
+    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+    {
+        agent.ResetPath();
+        canMove = false;
     }
     IEnumerator Move(float i)
     {
         yield return new WaitForSeconds(i);
         canMove = true;
     }
-    private void Update()
+    void Update()
     {
         if (!canMove)
         {
             return;
         }
-
-        if (blinky == null)
-        {
-            return;
-        }
         if (!isBite)
-            InkyMove();
+        {
+            MoveTowardsPredictedPosition();
+        }
     }
-    void InkyMove()
+
+    void MoveTowardsPredictedPosition()
     {
-        
-        Vector2 vector = new Vector2(blinky.transform.position.x, blinky.transform.position.y) - 
-            (new Vector2(target.transform.position.x, target.transform.position.y) +
-            (target.GetComponent<PlayerController>().GetVector() * distance));
+        Vector2 predictedTargetPosition = new Vector2(target.transform.position.x, target.transform.position.y) + (target.GetComponent<PlayerController>().GetVector() * distance);
+        agent.SetDestination(predictedTargetPosition);
 
-        agent.SetDestination(vector);
-
-        if (vector.x - transform.position.x > 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
+        spriteRenderer.flipX = (predictedTargetPosition.x - transform.position.x > 0);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -98,4 +93,5 @@ public class Inky : MonoBehaviour
 
         collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
     }
+
 }
