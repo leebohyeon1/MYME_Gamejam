@@ -21,57 +21,47 @@ public class OptionUI : MonoBehaviour
     int resolutionIndex;
     int screenModeIndex;
 
-
     [Header("Sound")]
     public Slider BGMSlider;
     public Slider SFXSlider;
-
 
     //==========================================================
 
     void Start()
     {
-        ClearResolution();
-        ClearScreenMode();
-
-        SetInitialResolution();
-
-        LoadSound();
-
-
-        SaveOption();
-
-   
-        // 슬라이더 이벤트 리스너 추가
-        BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
-        SFXSlider.onValueChanged.AddListener(SetSFXVolume);
+        InitializeOptions();
+        AddSliderListeners();
     }
 
     private void OnEnable()
     {
+        InitializeOptions();
+        AddSliderListeners();
+    }
+
+    private void InitializeOptions()
+    {
         ClearResolution();
         ClearScreenMode();
-
         SetInitialResolution();
-
         LoadSound();
-
-
         SaveOption();
+    }
 
-
-        // 슬라이더 이벤트 리스너 추가
+    private void AddSliderListeners()
+    {
         BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
         SFXSlider.onValueChanged.AddListener(SetSFXVolume);
     }
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             SaveBtn();
         }
     }
+
     //==========================================================
 
     #region Resolution
@@ -106,24 +96,20 @@ public class OptionUI : MonoBehaviour
 
     public void SetResolution(int resolutionIndex)
     {
-        // 해상도 값 저장 및 적용
         Resolution resolution = uniqueResolutions[resolutionIndex];
         this.resolutionIndex = resolutionIndex;
-        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreenMode);
     }
 
     private void SetInitialResolution()
     {
-        // 저장된 해상도 값이 있으면 그 값으로 설정하고, 없으면 현재 해상도로 설정
-       int savedResolutionIndex = PlayerPrefs.GetInt("resolution", -1);
+        int savedResolutionIndex = PlayerPrefs.GetInt("resolution", -1);
 
         if (savedResolutionIndex == -1)
         {
-            // 저장된 값이 없을 경우 현재 모니터 해상도로 설정
             Resolution currentResolution = Screen.currentResolution;
-            Screen.SetResolution(currentResolution.width, currentResolution.height, Screen.fullScreen);
+            Screen.SetResolution(currentResolution.width, currentResolution.height, Screen.fullScreenMode);
 
-            // 현재 해상도를 PlayerPrefs에 저장
             for (int i = 0; i < uniqueResolutions.Count; i++)
             {
                 if (uniqueResolutions[i].width == currentResolution.width && uniqueResolutions[i].height == currentResolution.height)
@@ -132,28 +118,20 @@ public class OptionUI : MonoBehaviour
                     break;
                 }
             }
-
-
         }
         else
         {
-            // 저장된 값이 있을 경우 그 값으로 설정
             SetResolution(savedResolutionIndex);
-
-            
         }
-
-     
     }
 
     #endregion
 
-
     #region ScreenMode
+
     void ClearScreenMode()
     {
         List<string> options = new List<string> { "FullScreen", "WindowScreen" };
-
         ScreenModeDropdown.ClearOptions();
         ScreenModeDropdown.AddOptions(options);
         ScreenModeDropdown.onValueChanged.AddListener(index => ChangeFullScreenMode((ScreenMode)index));
@@ -161,63 +139,32 @@ public class OptionUI : MonoBehaviour
         int screenModeIndex = PlayerPrefs.GetInt("screenMode", -1);
         if (screenModeIndex == -1)
         {
-            Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
         }
         else
         {
-            switch (screenModeIndex)
-            {
-                case 0:
-                    Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
-                    break;
-                case 1:
-                    Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.Windowed);
-                    break;
-            }
+            ChangeFullScreenMode((ScreenMode)screenModeIndex);
         }
-       
     }
 
     private void ChangeFullScreenMode(ScreenMode mode)
     {
-        switch (mode)
-        {
-            case ScreenMode.FullScreenWindow:
-                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-                screenModeIndex = (int)ScreenMode.FullScreenWindow;
-                break;
-            case ScreenMode.Window:
-                Screen.fullScreenMode = FullScreenMode.Windowed;
-                screenModeIndex = (int)ScreenMode.Window;
-                break;
-        }
+        screenModeIndex = (int)mode;
+        Screen.fullScreenMode = (FullScreenMode)mode;
     }
+
     #endregion
 
     public void LoadSound()
     {
-        if(PlayerPrefs.HasKey("BGMVolume"))
-        {
-            BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");   
-            Debug.Log(BGMSlider.value);
-        }
-        else
-        {
-            BGMSlider.value = 0.5f;
-        }
+        BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume", 0.5f);
+        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
         ChangeBgm();
-
-        if (PlayerPrefs.HasKey("SFXVolume"))
-        {
-            SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
-        }
-        else
-        {
-            SFXSlider.value = 0.5f;
-        }
         ChangeSfx();
     }
+
     #region Btn
+
     public void SaveBtn()
     {
         SaveOption();
@@ -236,17 +183,17 @@ public class OptionUI : MonoBehaviour
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
+
     #endregion
+
     //==========================================================
 
     void SaveOption()
     {
-        PlayerPrefs.SetInt("resolution",resolutionIndex);
+        PlayerPrefs.SetInt("resolution", resolutionIndex);
         PlayerPrefs.SetInt("screenMode", screenModeIndex);
-
         AudioManager.instance.Save();
-        
-        PlayerPrefs.Save();  
+        PlayerPrefs.Save();
     }
 
     void ResetOption()
@@ -267,20 +214,20 @@ public class OptionUI : MonoBehaviour
     {
         AudioManager.instance.ChangeBGM(BGMSlider.value);
     }
+
     public void ChangeSfx()
     {
         AudioManager.instance.ChangeSFX(SFXSlider.value);
     }
+
     public void SetBackgroundMusicVolume(float volume)
     {
         AudioManager.instance.bgmVolume = volume;
-        //PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
     }
 
     public void SetSFXVolume(float volume)
     {
         AudioManager.instance.sfxVolume = volume;
-        //PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
     }
 }
 
@@ -298,5 +245,3 @@ public class ResolutionComparer : IEqualityComparer<Resolution>
         return obj.width.GetHashCode() ^ obj.height.GetHashCode();
     }
 }
-
-

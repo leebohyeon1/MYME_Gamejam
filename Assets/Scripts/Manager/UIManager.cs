@@ -58,7 +58,7 @@ public class UIManager : MonoBehaviour, IListener
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !gameUI.Panel.activeSelf)
         {
             OptionUISet();
             Time.timeScale = 0f;

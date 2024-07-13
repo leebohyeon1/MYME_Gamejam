@@ -1054,7 +1054,7 @@ MonoBehaviour:
   carSpawnInterval: 2
   explosionPoint: {x: 0, y: 0}
   dynamitePrefab: {fileID: 8727062178168139052, guid: 35d5bffb254bd4b4680e9d50142d51d4, type: 3}
-  explosionSpawnInterval: 0.7
+  explosionSpawnInterval: 0.5
   Zombie:
   - {fileID: 2938736135833769221, guid: c0db751c9c327da42912a54a583d3f3a, type: 3}
   - {fileID: 6283575411202167504, guid: 95651fc54bea43e4baa039bc63945a3c, type: 3}
@@ -1070,6 +1070,7 @@ MonoBehaviour:
   background: {fileID: 0}
   spawnDistance: 10
   isCount: 0
+  isLoaging: 0
 --- !u!1 &6562195462859366891
 GameObject:
   m_ObjectHideFlags: 0

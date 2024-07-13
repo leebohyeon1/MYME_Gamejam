@@ -200,7 +200,7 @@ MonoBehaviour:
   - {fileID: 1369265060362545623}
   - {fileID: 7173460140263079818}
   - {fileID: 2973763360970269960}
-  speed: 12
+  speed: 15
   maxBox: 3
   curBox: 0
   throwForce: 17

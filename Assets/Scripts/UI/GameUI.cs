@@ -4,20 +4,17 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
+using System.Xml.Linq;
 
 public class GameUI : MonoBehaviour
 {
-    public TMP_Text scoreText, BoxText, scoreText2, BoxText2, totalScoreText,CountText;
+    public TMP_Text scoreText, BoxText, scoreText2, BoxText2, totalScoreText, CountText;
     public GameObject Panel;
     public Button[] Btn;
     public Camera mainCamera;
     public Image[] indicator;
-    
     public GameObject NameBar;
     public TMP_InputField nameInput;
-    [SerializeField]
-    public string nameT = null;
 
     private const string ScorePrefix = "Score: ";
     private const string BoxPrefix = "Box: ";
@@ -25,23 +22,25 @@ public class GameUI : MonoBehaviour
     private float totalScore;
     private float curNum, scoreTimer, timer;
     private bool isTotalCalculated;
-    bool isSound;
-    bool isScore;
-    int Count = 3;
+    private bool isSound;
+    private bool isScore;
+    private int Count = 3;
+    private int index = 0;
+    string nameT;
 
-    int index = 0;
     private void Awake()
     {
         nameT = nameInput.GetComponent<TMP_InputField>().text;
     }
+
     private void Start()
     {
         isSound = false;
-        isScore = false; 
+        isScore = false;
         mainCamera = Camera.main;
         UpdateUI();
 
-        if(PlayerPrefs.GetInt("Count", 0) == 1)
+        if (PlayerPrefs.GetInt("Count", 0) == 1)
         {
             CountText.gameObject.SetActive(true);
             GameManager.Instance.isCount = true;
@@ -57,139 +56,71 @@ public class GameUI : MonoBehaviour
             ResetScale(BoxText2.rectTransform);
 
             isTotalCalculated = false;
-            isScore =true;
+            isScore = true;
             scoreTimer = 4f;
             curNum = totalScore;
-            if (totalScore > GameManager.Instance.BestScore)
-            {
-                totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
-                NameBar.SetActive(true);
-            }
-            totalScoreText.text = curNum.ToString();
-            AudioManager.instance.StopSfx(AudioManager.Sfx.Slot);
-            if (totalScore > GameManager.Instance.BestScore)
-            {
-                AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
-            }
-            else
-            {
-                AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
-            }
+            HandleBestScoreDisplay();
             StartCoroutine(SetButtons(true));
         }
 
         if (isTotalCalculated)
         {
-            scoreTimer += Time.deltaTime;
-            if (scoreTimer > 0.9f)
-            {
-                if(!isSound && !isScore)
-                {
-                    AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot);
-                    isSound = true;
-                }
-               
-                if (scoreTimer > 1.4f)
-                {
-                    if (totalScore > GameManager.Instance.BestScore)
-                    {
-                        totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
-                    }
-
-                    if (scoreTimer > 2f)
-                    {
-                        totalScoreText.text = totalScore.ToString();
-                        isTotalCalculated = false;
-                        if (!isScore)
-                        {
-                            if (totalScore > GameManager.Instance.BestScore)
-                            {
-                                AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
-                            }
-                            else
-                            {
-                                AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
-                            }
-                        }
-                        return;
-                    }
-                    
-                }
-                UpdateTotalScoreUI();
-            }
+            HandleTotalScoreCalculation();
         }
+
         UpdateBoxIndicators();
 
-        if(nameInput.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Return))
+        if (nameInput.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Return))
         {
             InputName();
         }
 
-        if (Btn[index].gameObject.activeSelf)
-        {
-            if(Input.GetKeyDown(KeyCode.A))
-            {
-                index = 0;
-                Btn[0].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
-                Btn[1].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
-            }
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                index = 1;
-                Btn[1].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
-                Btn[0].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
-            }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                switch(index)
-                {
-                    case 0:
-                        RetryBtn();
-                        break;
-                    case 1:
-                        ExitBtn();
-                        break;
-                }
-            }
-        }
-    }
-    public void InputName()
-    {
-            nameT = nameInput.text;
-        
-        PlayerPrefs.SetString("BestPlayer", nameT);
-        PlayerPrefs.SetFloat("BestScore", totalScore);
-       GameManager.Instance.ScoreSet(totalScore, nameT);
-        NameBar.SetActive(false );
-    }
-    private void UpdateTotalScoreUI()
-    {
-        timer += Time.deltaTime;
-        if (timer > 0.05f)
-        {
-            totalScoreText.text = GenerateRandomNumbers(totalScore.ToString().Length);
-            timer = 0f;
-        }
+        HandleButtonInput();
     }
 
-    private string GenerateRandomNumbers(int length)
+    private void HandleBestScoreDisplay()
     {
-        string randomNumbers = "";
-        for (int i = 0; i < length; i++)
+        if (totalScore > GameManager.Instance.BestScore)
         {
-            randomNumbers += Random.Range(0, 10).ToString();
+            totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
+            NameBar.SetActive(true);
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
         }
-        return randomNumbers;
+        else
+        {
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
+        }
+
+        totalScoreText.text = curNum.ToString();
+        AudioManager.instance.StopSfx(AudioManager.Sfx.Slot);
     }
 
-    private bool AnyKeyExceptWASD()
+    private void HandleTotalScoreCalculation()
     {
-        return Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D);
-    }
+        scoreTimer += Time.deltaTime;
+        if (scoreTimer > 0.9f && !isSound && !isScore)
+        {
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot);
+            isSound = true;
+        }
 
-    private void ResetScale(RectTransform rectTransform)
-    {
-        rectTransform.localScale = Vector3.one;
+        if (scoreTimer > 1.4f)
+        {
+            if (totalScore > GameManager.Instance.BestScore)
+            {
+                totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
+            }
+
+            if (scoreTimer > 2f)
+            {
+                totalScoreText.text = totalScore.ToString();
+                isTotalCalculated = false;
+                HandleBestScoreDisplay();
+                return;
+            }
+
+            UpdateTotalScoreUI();
+        }
     }
 
     private void UpdateBoxIndicators()
@@ -277,20 +208,18 @@ public class GameUI : MonoBehaviour
 
     private void UpdateUI()
     {
-        // 초기 점수와 박스 수를 UI에 설정합니다.
-        scoreText.text = "Score: " + score;
-        BoxText.text = "Box: " + box;
+        scoreText.text = ScorePrefix + score;
+        BoxText.text = BoxPrefix + box;
 
-        // 버튼과 기타 UI 컴포넌트들의 초기 상태를 설정할 수 있습니다.
         foreach (var button in Btn)
         {
-            button.gameObject.SetActive(false);  // 게임 시작 시 버튼을 숨깁니다.
+            button.gameObject.SetActive(false);
         }
     }
 
     public IEnumerator CountDown()
     {
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             CountText.text = Count.ToString();
             AudioManager.instance.PlaySfx(AudioManager.Sfx.CountDown);
@@ -299,5 +228,75 @@ public class GameUI : MonoBehaviour
         }
         CountText.gameObject.SetActive(false);
         GameManager.Instance.isCount = false;
+    }
+
+    private bool AnyKeyExceptWASD()
+    {
+        return Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D);
+    }
+
+    private void ResetScale(RectTransform rectTransform)
+    {
+        rectTransform.localScale = Vector3.one;
+    }
+
+    private void UpdateTotalScoreUI()
+    {
+        timer += Time.deltaTime;
+        if (timer > 0.05f)
+        {
+            totalScoreText.text = GenerateRandomNumbers(totalScore.ToString().Length);
+            timer = 0f;
+        }
+    }
+
+    private string GenerateRandomNumbers(int length)
+    {
+        string randomNumbers = "";
+        for (int i = 0; i < length; i++)
+        {
+            randomNumbers += Random.Range(0, 10).ToString();
+        }
+        return randomNumbers;
+    }
+
+    private void HandleButtonInput()
+    {
+        if (Btn[index].gameObject.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                index = 0;
+                Btn[0].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+                Btn[1].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                index = 1;
+                Btn[1].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+                Btn[0].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                switch (index)
+                {
+                    case 0:
+                        RetryBtn();
+                        break;
+                    case 1:
+                        ExitBtn();
+                        break;
+                }
+            }
+        }
+    }
+
+    public void InputName()
+    {
+        nameT = nameInput.text;
+        PlayerPrefs.SetString("BestPlayer", nameT);
+        PlayerPrefs.SetFloat("BestScore", totalScore);
+        GameManager.Instance.ScoreSet(totalScore, nameT);
+        NameBar.SetActive(false);
     }
 }

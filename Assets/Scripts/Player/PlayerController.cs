@@ -1,40 +1,33 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     public GameObject[] BoxParents;
     public float speed = 5f;
-
     public int maxBox = 3;
     public int curBox;
+    public float throwForce = 10f;
+    public Vector3 throwDirectionRandomness = new Vector3(1, 1, 0);
 
     private Rigidbody2D rb;
-    Vector2 movement;
-
-    Animator animator;
-
-    bool isDead;
-
-    public float throwForce = 10f; // 던지는 힘의 크기
-    public Vector3 throwDirectionRandomness = new Vector3(1, 1, 0);
+    private Animator animator;
+    private Vector2 movement;
+    private bool isDead;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-
         isDead = false;
     }
 
     void Update()
     {
-        if(!isDead && !GameManager.Instance.isCount)
+        if (!isDead && !GameManager.Instance.isCount)
         {
             Move();
         }
-
     }
 
     void Move()
@@ -45,37 +38,34 @@ public class PlayerController : MonoBehaviour
         movement = new Vector2(moveHorizontal, moveVertical);
         rb.velocity = movement * speed;
 
-        if(moveHorizontal > 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
-        else if(moveHorizontal < 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
-
-        if (moveHorizontal == 0 && moveVertical == 0)
-        {
-            animator.SetBool("isMove", false);
-        }
-        else
-        {
-            animator.SetBool("isMove", true);
-        }
-       
+        UpdateSpriteDirection(moveHorizontal);
+        UpdateAnimationState(moveHorizontal, moveVertical);
     }
+
+    private void UpdateSpriteDirection(float moveHorizontal)
+    {
+        GetComponent<SpriteRenderer>().flipX = moveHorizontal > 0;
+    }
+
+    private void UpdateAnimationState(float moveHorizontal, float moveVertical)
+    {
+        animator.SetBool("isMove", moveHorizontal != 0 || moveVertical != 0);
+    }
+
     public void GetBox()
     {
-        
         GameManager.Instance.ActivateLocation();
         curBox++;
     }
 
     public void DropBox()
     {
+        if (curBox <= 0) return;
+
+        GameObject box = BoxParents[curBox - 1].transform.GetChild(0).gameObject;
+        Destroy(box);
+        GameManager.Instance.RemoveBoxList(box);
         curBox--;
-        Destroy(BoxParents[curBox].transform.GetChild(0).gameObject);
-        GameManager.Instance.RemoveBoxList(BoxParents[curBox].transform.GetChild(0).gameObject);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -83,9 +73,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             Die();
-
         }
-      
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -96,30 +84,25 @@ public class PlayerController : MonoBehaviour
             DropBox();
             GameManager.Instance.DeactivateLocation(collision.gameObject);
         }
-
-        if (collision.CompareTag("Enemy"))
+        else if (collision.CompareTag("Enemy") || collision.CompareTag("Car") || collision.CompareTag("Explosion"))
         {
             Die();
-        }
-
-        if (collision.CompareTag("Car") || collision.CompareTag("Explosion"))
-        {
-            Die();
-            animator.SetTrigger("isCar");
-            if ((collision.transform.position.x -transform.position.x) > 0)
-            {
-                GetComponent<SpriteRenderer>().flipX = true;
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().flipX = false;
-            }
-            transform.Translate(-(collision.transform.position - transform.position) * 2, Space.World);
-           
+            HandleCollisionAnimation(collision);
         }
     }
+
+    private void HandleCollisionAnimation(Collider2D collision)
+    {
+        if (collision.CompareTag("Car") || collision.CompareTag("Explosion"))
+        {
+            animator.SetTrigger("isCar");
+            GetComponent<SpriteRenderer>().flipX = (collision.transform.position.x - transform.position.x) > 0;
+            transform.Translate(-(collision.transform.position - transform.position) * 2, Space.World);
+        }
+    }
+
     public Vector2 GetVector()
-    {        
+    {
         return movement.normalized;
     }
 
@@ -133,46 +116,38 @@ public class PlayerController : MonoBehaviour
         isDead = true;
 
         ThrowAllObjects();
-
     }
 
-    public void DeadForZombie(int i, GameObject Zombie)
+    public void DeadForZombie(int direction, GameObject zombie)
     {
-        if(i == 0)
-        {
-            animator.SetTrigger("isRightZombie");
-        }
-        else if (i == 1)
-        {
-            animator.SetTrigger("isLeftZombie");
-        }
-        StartCoroutine(DestroyZom(Zombie));
+        animator.SetTrigger(direction == 0 ? "isRightZombie" : "isLeftZombie");
+        StartCoroutine(DestroyZombie(zombie));
     }
 
-    public IEnumerator DestroyZom(GameObject Zombie)
+    private IEnumerator DestroyZombie(GameObject zombie)
     {
         yield return new WaitForSeconds(0.2f);
-        DestroyImmediate(Zombie);
+        DestroyImmediate(zombie);
     }
 
     public void ThrowAllObjects()
     {
         for (int i = 0; i < curBox; i++)
         {
-            Rigidbody2D rb = BoxParents[i].transform.GetChild(0).GetComponent<Rigidbody2D>();
-            BoxParents[i].transform.GetChild(0).transform.parent = null;
+            GameObject box = BoxParents[i].transform.GetChild(0).gameObject;
+            Rigidbody2D boxRb = box.GetComponent<Rigidbody2D>();
+            box.transform.parent = null;
             Vector3 throwDirection = CalculateThrowDirection();
-          
-            rb.AddForce(throwDirection * throwForce,ForceMode2D.Impulse);
-        }
-    }
-    
 
-    Vector3 CalculateThrowDirection()
+            boxRb.AddForce(throwDirection * throwForce, ForceMode2D.Impulse);
+        }
+        curBox = 0; // Reset curBox after throwing all boxes
+    }
+
+    private Vector3 CalculateThrowDirection()
     {
         float x = Random.Range(-throwDirectionRandomness.x, throwDirectionRandomness.x);
-        float y = Random.Range(-throwDirectionRandomness.y, throwDirectionRandomness.y); // 항상 위로 던져지도록
+        float y = Random.Range(-throwDirectionRandomness.y, throwDirectionRandomness.y);
         return new Vector3(x, y, 0).normalized;
     }
 }
-

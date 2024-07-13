@@ -1,36 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using DG.Tweening;
-using Unity.VisualScripting;
 
 public class TitleUI : MonoBehaviour
 {
     public GameObject title;
-
     public TMP_Text nameText;
     public TMP_Text score;
-
     public GameObject Loading;
     public GameObject[] Btn;
 
-    int BtnIndex = 0;
-    //==========================================================
+    private int BtnIndex = 0;
 
     void Start()
     {
-        title.transform.DOPunchScale(new Vector3(0.5f,0.5f,0.5f),2f,2,0).SetEase(Ease.InCubic);
-        Btn[0].transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
-        if (PlayerPrefs.HasKey("BestPlayer"))
-        {
-            nameText.text = GameManager.Instance.BestPlayer;
-            score.text = GameManager.Instance.BestScore.ToString();
-        }
-       
+        AnimateTitle();
+        HighlightButton(BtnIndex);
+        LoadPlayerData();
     }
-
 
     void Update()
     {
@@ -39,63 +28,86 @@ public class TitleUI : MonoBehaviour
             return;
         }
 
+        HandleInput();
+    }
+
+    private void AnimateTitle()
+    {
+        title.transform.DOPunchScale(new Vector3(0.5f, 0.5f, 0.5f), 2f, 2, 0).SetEase(Ease.InCubic);
+    }
+
+    private void LoadPlayerData()
+    {
+        if (PlayerPrefs.HasKey("BestPlayer"))
+        {
+            nameText.text = GameManager.Instance.BestPlayer;
+            score.text = GameManager.Instance.BestScore.ToString();
+        }
+    }
+
+    private void HandleInput()
+    {
         if (Input.GetKeyDown(KeyCode.S))
         {
-            if (BtnIndex < Btn.Length -1)
-            {
-                BtnIndex++;
-            }
-            else
-            {
-                BtnIndex = Btn.Length -1;
-            }
-
-            for(int i = 0; i < Btn.Length; i++)
-            { 
-                if(i != BtnIndex)
-                Btn[i].transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
-            }
-            Btn[BtnIndex].transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
-            AudioManager.instance.PlaySfx(AudioManager.Sfx.Btn);
-
+            NavigateButtons(1);
         }
-        if (Input.GetKeyDown(KeyCode.W))
+        else if (Input.GetKeyDown(KeyCode.W))
         {
-            if(BtnIndex > 0)
-            {
-                BtnIndex--;
-            }
-            else
-            {
-                BtnIndex = 0;
-            }
-            for (int i = 0; i < Btn.Length; i++)
-            {
-                if (i != BtnIndex)
-                    Btn[i].transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
-            }
-            Btn[BtnIndex].transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
-            AudioManager.instance.PlaySfx(AudioManager.Sfx.Btn);
+            NavigateButtons(-1);
         }
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        else if (Input.GetKeyDown(KeyCode.Space))
         {
-            switch(BtnIndex)
-            {
-                case 0:
-                    StartBtn();
-                    break;
-                case 1:
-                    OptionBtn();
-                    break;
-                case 2:
-                    ExitBtn();
-                    break;
-            }
+            ActivateButton();
         }
-        
     }
-    //==========================================================
+
+    private void NavigateButtons(int direction)
+    {
+        BtnIndex = Mathf.Clamp(BtnIndex + direction, 0, Btn.Length - 1);
+        UpdateButtonScales();
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Btn);
+    }
+
+    private void UpdateButtonScales()
+    {
+        for (int i = 0; i < Btn.Length; i++)
+        {
+            if (i == BtnIndex)
+            {
+                HighlightButton(i);
+            }
+            else
+            {
+                ResetButtonScale(i);
+            }
+        }
+    }
+
+    private void HighlightButton(int index)
+    {
+        Btn[index].transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+    }
+
+    private void ResetButtonScale(int index)
+    {
+        Btn[index].transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
+    }
+
+    private void ActivateButton()
+    {
+        switch (BtnIndex)
+        {
+            case 0:
+                StartBtn();
+                break;
+            case 1:
+                OptionBtn();
+                break;
+            case 2:
+                ExitBtn();
+                break;
+        }
+    }
 
     #region Button
     public void StartBtn()
@@ -115,5 +127,4 @@ public class TitleUI : MonoBehaviour
         UIManager.Instance.OptionUISet(true);
     }
     #endregion
-
 }

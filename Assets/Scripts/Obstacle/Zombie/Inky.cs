@@ -1,107 +1,120 @@
 using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-public class Inky : MonoBehaviour,IListener
-{
-    [SerializeField] GameObject target;
 
-    NavMeshAgent agent;
+public class Inky : MonoBehaviour, IListener
+{
+    [SerializeField] private GameObject target;
+
+    private NavMeshAgent agent;
+    private GameObject blinky;
 
     public float distance = 2f;
-
-    GameObject blinky;
-    public bool isBite = false;
-    public bool canMove = false;
+    private bool isBite = false;
+    private bool canMove = false;
     private const float MOVE_DELAY = 1f;
-    void Start()
+
+    private void Start()
+    {
+        InitializeTarget();
+        InitializeBlinky();
+        StartMoveCoroutine();
+        InitializeAgent();
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
+    }
+
+    private void InitializeTarget()
     {
         if (target == null)
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-        blinky = FindAnyObjectByType<Blinky>().gameObject;
-        if (PlayerPrefs.HasKey("Count"))
-        {
-            if (PlayerPrefs.GetInt("Count") == 1)
-            {
-                StartCoroutine(Move(3f));
-            }
-            else
-            {
-                StartCoroutine(Move(0.1f));
-            }
-        }
-        else
-        {
-            StartCoroutine(Move(0.1f));
-        }
-        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
-        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+    }
+
+    private void InitializeBlinky()
+    {
+        blinky = FindObjectOfType<Blinky>()?.gameObject;
+    }
+
+    private void StartMoveCoroutine()
+    {
+        float delay = PlayerPrefs.HasKey("Count") && PlayerPrefs.GetInt("Count") == 1 ? 3f : 0.1f;
+        StartCoroutine(MoveAfterDelay(delay));
+    }
+
+    private void InitializeAgent()
+    {
+        agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+
+    public void OnEvent(EVENT_TYPE eventType, Component sender, object param = null)
+    {
+        if (eventType == EVENT_TYPE.DEAD)
+        {
+            StopAgentMovement();
+        }
+    }
+
+    private void StopAgentMovement()
     {
         agent.ResetPath();
         canMove = false;
     }
-    IEnumerator Move(float i)
+
+    private IEnumerator MoveAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(i);
+        yield return new WaitForSeconds(delay);
         canMove = true;
     }
+
     private void Update()
     {
-        if (!canMove)
+        if (!canMove || isBite || blinky == null)
         {
             return;
         }
 
-        if (blinky == null)
-        {
-            return;
-        }
-        if (!isBite)
-            InkyMove();
+        InkyMove();
     }
-    void InkyMove()
+
+    private void InkyMove()
     {
-        
-        Vector2 vector = new Vector2(blinky.transform.position.x, blinky.transform.position.y) - 
-            (new Vector2(target.transform.position.x, target.transform.position.y) +
-            (target.GetComponent<PlayerController>().GetVector() * distance));
+        Vector2 targetVector = (Vector2)target.transform.position + target.GetComponent<PlayerController>().GetVector() * distance;
+        Vector2 inkyTarget = (Vector2)blinky.transform.position - targetVector;
 
-        agent.SetDestination(vector);
+        agent.SetDestination(inkyTarget);
 
-        if (vector.x - transform.position.x > 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
-        }
+        UpdateSpriteDirection(inkyTarget);
+    }
+
+    private void UpdateSpriteDirection(Vector2 targetPosition)
+    {
+        GetComponent<SpriteRenderer>().flipX = targetPosition.x - transform.position.x > 0;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            isBite = true;
-            ProcessCollision(collision);
+            HandleCollisionWithPlayer(collision);
         }
     }
 
-    void ProcessCollision(Collision2D collision)
+    private void HandleCollisionWithPlayer(Collision2D collision)
     {
-        float targetOffsetX = (collision.transform.position.x - transform.position.x > 0) ? -1 : 1;
-        bool shouldFlip = collision.gameObject.GetComponent<SpriteRenderer>().flipX == false;
+        isBite = true;
+        ProcessCollision(collision);
+    }
+
+    private void ProcessCollision(Collision2D collision)
+    {
+        float targetOffsetX = collision.transform.position.x - transform.position.x > 0 ? -1 : 1;
+        bool shouldFlip = !collision.gameObject.GetComponent<SpriteRenderer>().flipX;
 
         transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
-
         collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
     }
 }
