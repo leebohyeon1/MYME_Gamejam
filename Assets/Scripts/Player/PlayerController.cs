@@ -1,8 +1,11 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public bool isStageMode;
+
     public GameObject[] BoxParents;
     public float speed = 5f;
     public int maxBox = 3;
@@ -62,10 +65,25 @@ public class PlayerController : MonoBehaviour
     {
         if (curBox <= 0) return;
 
-        GameObject box = BoxParents[curBox - 1].transform.GetChild(0).gameObject;
-        Destroy(box);
-        GameManager.Instance.RemoveBoxList(box);
-        curBox--;
+        if(!isStageMode)
+        {
+            GameObject box = BoxParents[curBox - 1].transform.GetChild(0).gameObject;
+            Destroy(box);
+            GameManager.Instance.RemoveBoxList(box);
+            curBox--;
+        }
+        else
+        {
+            for(int i = 0; i < curBox; i++) 
+            {
+                GameObject box = BoxParents[i].transform.GetChild(0).gameObject;
+                Destroy(box);
+                GameManager.Instance.RemoveBoxList(box);
+            }
+            curBox = 0;
+          
+        }
+       
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -80,9 +98,20 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.CompareTag("Delivery"))
         {
+            if (curBox <= 0) return;
+
             AudioManager.instance.PlaySfx(AudioManager.Sfx.GiveBox);
             DropBox();
-            GameManager.Instance.DeactivateLocation(collision.gameObject);
+
+            if(!isStageMode)
+            {
+                GameManager.Instance.DeactivateLocation(collision.gameObject);
+            }
+            else
+            {
+
+            }
+            
         }
         else if (collision.CompareTag("Enemy") || collision.CompareTag("Car") || collision.CompareTag("Explosion"))
         {

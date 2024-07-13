@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     //=========================================================
+    public bool isTimeMode = false;
+
+    #region randomMode
     [Header("점수")]
     public int score = 0;
     public float scoreInterval = 1f;
@@ -21,16 +24,26 @@ public class GameManager : MonoBehaviour
     public bool isGameOver;
     public float BestScore = 0;
     public string BestPlayer;
+    #endregion
 
+    #region TImeMode
+    public float timeOut;
+    private float CurTime;
+    private float timeUp;
+    #endregion
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;
     private int activeLocationsCount = 0;
+
+    public GameObject ST_deliveryPoint;
 
     [Header("박스")]
     public GameObject[] boxPrefab;
     public int boxPreCount = 0;
     public List<GameObject> boxList = new List<GameObject>();
     private float boxSpawnTimer = 0f;
+
+    public GameObject[] ST_BoxSpawnPoints;
 
     [Header("자동차")]
     public Transform[] carSpawnPoint;
@@ -59,22 +72,47 @@ public class GameManager : MonoBehaviour
     public bool isCount;
     public bool isLoaging;
 
+
+
+    
     void Start()
     {
         InitializeSingleton();
-        LoadPlayerData();
 
-        if (SceneManager.GetActiveScene().buildIndex != 0)
+        if(!isTimeMode)
         {
-            target = FindObjectOfType<PlayerController>().gameObject;
+            LoadPlayerData();
+
+            if (SceneManager.GetActiveScene().buildIndex != 0)
+            {
+                target = FindObjectOfType<PlayerController>().gameObject;
+            }
         }
+        else
+        {
+            ST_deliveryPoint.SetActive(true);
+            CurTime = timeOut;
+
+        }
+      
     }
 
     void Update()
     {
-        if (!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
+        if (!isTimeMode)
         {
-            UpdateTimers();
+            if (!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
+            {
+                UpdateTimers();
+            }
+        }
+        else
+        {
+            if(CurTime == 0f)
+            {
+
+            }
+          
         }
     }
 
@@ -89,6 +127,9 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
     }
+
+    #region RandomMode
+
 
     private void LoadPlayerData()
     {
@@ -152,6 +193,10 @@ public class GameManager : MonoBehaviour
     public void RemoveBoxList(GameObject box)
     {
         boxList.Remove(box);
+        if(isTimeMode)
+        {
+            CurTime += timeUp;
+        }
     }
 
     public void ActivateLocation()
@@ -274,4 +319,25 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetString("BestPlayer", name);
         PlayerPrefs.Save();
     }
-}
+    #endregion
+
+    #region TimeMode
+
+    public void St_SpawnBox()
+    {
+        if (boxList.Count < maxBox)
+        {
+           int ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+            int ranNum = Random.Range(0, boxPrefab.Length);
+            GameObject box = Instantiate(boxPrefab[ranNum], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+            boxList.Add(box);
+        }  
+    }
+    public void TimOut()
+    {
+
+    }
+
+    #endregion
+
+ }

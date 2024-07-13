@@ -1023,6 +1023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45435f24b931d0a4d868f8c0e7954af5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isStageMode: 0
   score: 0
   scoreInterval: 0.05
   maxBox: 3
@@ -1045,6 +1046,14 @@ MonoBehaviour:
   - {fileID: 5410754739146455909, guid: fd3b4abc0ddf2e4419d879bd553d596d, type: 3}
   boxPreCount: 0
   boxList: []
+  ST_BoxSpawnPoints:
+  - {fileID: 209794764396545206}
+  - {fileID: 6828416115916977501}
+  - {fileID: 3688193199537336649}
+  - {fileID: 6751437049011403711}
+  - {fileID: 3362382569946374856}
+  - {fileID: 995076603271484341}
+  - {fileID: 1886233105226712776}
   carSpawnPoint:
   - {fileID: 4058004870399766389}
   - {fileID: 221652360847946559}

@@ -66,7 +66,6 @@ public class AudioManager : MonoBehaviour
         bgmPlayer.loop = true;
         if (PlayerPrefs.HasKey("BGMVolume"))
         {
-            Debug.Log(PlayerPrefs.GetFloat("BGMVolume"));
             bgmPlayer.volume = PlayerPrefs.GetFloat("BGMVolume");
         }
         else
