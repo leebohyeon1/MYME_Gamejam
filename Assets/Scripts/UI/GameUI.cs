@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class GameUI : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class GameUI : MonoBehaviour
     bool isScore;
     int Count = 3;
 
+    int index = 0;
     private void Awake()
     {
         nameT = nameInput.GetComponent<TMP_InputField>().text;
@@ -123,17 +125,38 @@ public class GameUI : MonoBehaviour
             InputName();
         }
 
-        if (Btn[0].gameObject.activeSelf)
+        if (Btn[index].gameObject.activeSelf)
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if(Input.GetKeyDown(KeyCode.A))
             {
-                RetryBtn();
+                index = 0;
+                Btn[0].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+                Btn[1].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                index = 1;
+                Btn[1].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+                Btn[0].gameObject.transform.DOScale(Vector3.one, 0.25f).SetEase(Ease.InQuad);
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                switch(index)
+                {
+                    case 0:
+                        RetryBtn();
+                        break;
+                    case 1:
+                        ExitBtn();
+                        break;
+                }
             }
         }
     }
     public void InputName()
     {
-        nameT = nameInput.text;
+            nameT = nameInput.text;
+        
         PlayerPrefs.SetString("BestPlayer", nameT);
         PlayerPrefs.SetFloat("BestScore", totalScore);
        GameManager.Instance.ScoreSet(totalScore, nameT);
@@ -236,6 +259,9 @@ public class GameUI : MonoBehaviour
         {
             button.gameObject.SetActive(active);
         }
+
+        index = 0;
+        Btn[0].gameObject.transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
     }
 
     public void RetryBtn()
