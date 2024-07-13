@@ -53,6 +53,11 @@ public class UIManager : MonoBehaviour, IListener
 
     void Update()
     {
+        if (GameManager.Instance.isLoaging)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             OptionUISet();

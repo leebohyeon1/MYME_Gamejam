@@ -30,16 +30,24 @@ public class Clyde : MonoBehaviour
         {
             if (PlayerPrefs.GetInt("Count") == 1)
             {
-                StartCoroutine(Move());
+                StartCoroutine(Move(3f));
             }
+            else
+            {
+                StartCoroutine(Move(0.1f));
+            }
+        }
+        else
+        {
+            StartCoroutine(Move(0.1f));
         }
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-    IEnumerator Move()
+    IEnumerator Move(float i)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(i);
         canMove = true;
     }
     private void Update()

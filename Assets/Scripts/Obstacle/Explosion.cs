@@ -20,4 +20,8 @@ public class Explosion : MonoBehaviour
     {
         Destroy(gameObject);
     }
+    public void enableCollider()
+    {
+        GetComponent<Collider2D>().enabled = false;
+    }
 }

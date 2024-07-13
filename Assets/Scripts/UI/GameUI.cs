@@ -24,9 +24,9 @@ public class GameUI : MonoBehaviour
     private int score, box;
     private float totalScore;
     private float curNum, scoreTimer, timer;
-    [SerializeField]
     private bool isTotalCalculated;
-
+    bool isSound;
+    bool isScore;
     int Count = 3;
 
     private void Awake()
@@ -35,6 +35,8 @@ public class GameUI : MonoBehaviour
     }
     private void Start()
     {
+        isSound = false;
+        isScore = false; 
         mainCamera = Camera.main;
         UpdateUI();
 
@@ -54,6 +56,7 @@ public class GameUI : MonoBehaviour
             ResetScale(BoxText2.rectTransform);
 
             isTotalCalculated = false;
+            isScore =true;
             scoreTimer = 4f;
             curNum = totalScore;
             if (totalScore > GameManager.Instance.BestScore)
@@ -63,6 +66,14 @@ public class GameUI : MonoBehaviour
             }
             totalScoreText.text = curNum.ToString();
             AudioManager.instance.StopSfx(AudioManager.Sfx.Slot);
+            if (totalScore > GameManager.Instance.BestScore)
+            {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
+            }
+            else
+            {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
+            }
             SetButtons(true);
         }
 
@@ -71,7 +82,12 @@ public class GameUI : MonoBehaviour
             scoreTimer += Time.deltaTime;
             if (scoreTimer > 0.9f)
             {
-                AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot);
+                if(!isSound && !isScore)
+                {
+                    AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot);
+                    isSound = true;
+                }
+               
                 if (scoreTimer > 1.4f)
                 {
                     if (totalScore > GameManager.Instance.BestScore)
@@ -83,15 +99,18 @@ public class GameUI : MonoBehaviour
                     {
                         totalScoreText.text = totalScore.ToString();
                         isTotalCalculated = false;
-                        if (totalScore > GameManager.Instance.BestScore)
+                        if (!isScore)
                         {
-                            AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
+                            if (totalScore > GameManager.Instance.BestScore)
+                            {
+                                AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
+                            }
+                            else
+                            {
+                                AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
+                            }
                         }
-                        else
-                        {
-                            AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
-                        }
-                            return;
+                        return;
                     }
                     
                 }

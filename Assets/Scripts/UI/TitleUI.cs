@@ -11,6 +11,8 @@ public class TitleUI : MonoBehaviour
 
     public TMP_Text nameText;
     public TMP_Text score;
+
+    public GameObject Loading;
     //==========================================================
 
     void Start()
@@ -36,8 +38,8 @@ public class TitleUI : MonoBehaviour
     public void StartBtn()
     {
         PlayerPrefs.SetInt("Count", 1);
-        SceneManager.LoadScene(2);
-        EventManager.Instance.PostNotification(EVENT_TYPE.SCENE_LOAD, this, 1);
+        Loading.SetActive(true);
+        GameManager.Instance.isLoaging = true;
     }
 
     public void ExitBtn()

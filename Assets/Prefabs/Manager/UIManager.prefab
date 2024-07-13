@@ -1252,7 +1252,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3912569520465839912}
         m_TargetAssemblyTypeName: OptionUI, Assembly-CSharp
-        m_MethodName: ChangeVolume
+        m_MethodName: ChangeBgm
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2316,6 +2316,7 @@ MonoBehaviour:
   title: {fileID: 4485560417309569733}
   nameText: {fileID: 8431167710813314758}
   score: {fileID: 4671464758860242858}
+  Loading: {fileID: 0}
 --- !u!1 &2871155338947162765
 GameObject:
   m_ObjectHideFlags: 0
@@ -3869,7 +3870,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 3912569520465839912}
         m_TargetAssemblyTypeName: OptionUI, Assembly-CSharp
-        m_MethodName: ChangeVolume
+        m_MethodName: ChangeSfx
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7485,7 +7486,6 @@ MonoBehaviour:
   NameBar: {fileID: 256696602375337194}
   nameInput: {fileID: 637033197632254038}
   nameT: 
-  isTotalCalculated: 0
 --- !u!1 &8324502217572749035
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,23 +21,31 @@ public class Pinky : MonoBehaviour
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-        if(PlayerPrefs.HasKey("Count"))
+
+        if (PlayerPrefs.HasKey("Count"))
         {
             if (PlayerPrefs.GetInt("Count") == 1)
             {
-                StartCoroutine(Move());
+                StartCoroutine(Move(3f));
+            }
+            else
+            {
+                StartCoroutine(Move(0.1f));
             }
         }
-        
+        else
+        {
+            StartCoroutine(Move(0.1f));
+        }
         agent = GetComponent<NavMeshAgent>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-    IEnumerator Move()
+    IEnumerator Move(float i)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(i);
         canMove = true;
     }
     void Update()

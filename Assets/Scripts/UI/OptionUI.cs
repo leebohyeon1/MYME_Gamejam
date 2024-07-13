@@ -27,9 +27,6 @@ public class OptionUI : MonoBehaviour
     public Slider SFXSlider;
 
 
-
-   
-
     //==========================================================
 
     void Start()
@@ -45,6 +42,24 @@ public class OptionUI : MonoBehaviour
         SaveOption();
 
    
+        // 슬라이더 이벤트 리스너 추가
+        BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
+        SFXSlider.onValueChanged.AddListener(SetSFXVolume);
+    }
+
+    private void OnEnable()
+    {
+        ClearResolution();
+        ClearScreenMode();
+
+        SetInitialResolution();
+
+        LoadSound();
+
+
+        SaveOption();
+
+
         // 슬라이더 이벤트 리스너 추가
         BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
         SFXSlider.onValueChanged.AddListener(SetSFXVolume);
@@ -133,6 +148,7 @@ public class OptionUI : MonoBehaviour
 
     #endregion
 
+
     #region ScreenMode
     void ClearScreenMode()
     {
@@ -182,13 +198,24 @@ public class OptionUI : MonoBehaviour
     {
         if(PlayerPrefs.HasKey("BGMVolume"))
         {
-            BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");
+            BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");   
+            Debug.Log(BGMSlider.value);
         }
-        
-        if(PlayerPrefs.HasKey("SFXVolume"))
+        else
+        {
+            BGMSlider.value = 0.5f;
+        }
+        ChangeBgm();
+
+        if (PlayerPrefs.HasKey("SFXVolume"))
         {
             SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
         }
+        else
+        {
+            SFXSlider.value = 0.5f;
+        }
+        ChangeSfx();
     }
     #region Btn
     public void SaveBtn()
@@ -205,6 +232,8 @@ public class OptionUI : MonoBehaviour
 
     public void ExitBtn()
     {
+        SaveOption();
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
     #endregion
@@ -214,8 +243,9 @@ public class OptionUI : MonoBehaviour
     {
         PlayerPrefs.SetInt("resolution",resolutionIndex);
         PlayerPrefs.SetInt("screenMode", screenModeIndex);
-        PlayerPrefs.SetFloat("BGMVolume", BGMSlider.value);
-        PlayerPrefs.SetFloat("SFXVolume", SFXSlider.value);
+
+        AudioManager.instance.Save();
+        
         PlayerPrefs.Save();  
     }
 
@@ -230,24 +260,27 @@ public class OptionUI : MonoBehaviour
         ChangeFullScreenMode((ScreenMode)screenModeIndex);
         ScreenModeDropdown.value = screenModeIndex;
 
-        BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");
-        SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
+        LoadSound();
     }
 
+    public void ChangeBgm()
+    {
+        AudioManager.instance.ChangeBGM(BGMSlider.value);
+    }
+    public void ChangeSfx()
+    {
+        AudioManager.instance.ChangeSFX(SFXSlider.value);
+    }
     public void SetBackgroundMusicVolume(float volume)
     {
-        PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
+        AudioManager.instance.bgmVolume = volume;
+        //PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
     }
 
     public void SetSFXVolume(float volume)
-    { 
-        PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
-    }
-
-    public void ChangeVolume()
     {
-        SetBackgroundMusicVolume(BGMSlider.value);
-        SetSFXVolume(SFXSlider.value);
+        AudioManager.instance.sfxVolume = volume;
+        //PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
     }
 }
 

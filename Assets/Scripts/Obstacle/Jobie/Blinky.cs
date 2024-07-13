@@ -16,6 +16,8 @@ public class Blinky : MonoBehaviour
     private const float MOVE_DELAY = 1f;
     void Start()
     {
+        canMove = false;
+
         if (target == null)
         {
             target = GameObject.FindGameObjectWithTag("Player");
@@ -25,8 +27,16 @@ public class Blinky : MonoBehaviour
         {
             if (PlayerPrefs.GetInt("Count") == 1)
             {
-                StartCoroutine(Move());
+                StartCoroutine(Move(3f));
             }
+            else
+            {
+                StartCoroutine(Move(0.1f));
+            }
+        }
+        else
+        {
+            StartCoroutine(Move(0.1f));
         }
 
         agent = GetComponent<NavMeshAgent>();
@@ -34,9 +44,9 @@ public class Blinky : MonoBehaviour
         agent.updateUpAxis = false;
     }
 
-    IEnumerator Move()
+    IEnumerator Move(float i)
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(i);
         canMove = true;
     }
     // Update is called once per frame

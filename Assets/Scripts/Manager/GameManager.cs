@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
     public float spawnDistance = 10.0f;
 
     public bool isCount;
+    public bool isLoaging;
 
     void Start()
     {
