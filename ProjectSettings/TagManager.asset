@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Car
   - Explosion
+  - Bad
   layers:
   - Default
   - TransparentFX

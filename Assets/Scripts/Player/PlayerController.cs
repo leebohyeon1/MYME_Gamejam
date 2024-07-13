@@ -93,14 +93,18 @@ public class PlayerController : MonoBehaviour
         if (curBox == 1)
         {
             GameManager.Instance.score += 200;
+            GameManager.Instance.boxStack++;
+         
         }
-        else if (curBox == 1)
+        else if (curBox == 2)
         {
             GameManager.Instance.score += 500;
+            GameManager.Instance.boxStack += 2;
         }
         else
         {
             GameManager.Instance.score += 1500;
+            GameManager.Instance.boxStack += 3;
         }
 
         for (int i = 0; i < curBox; i++) 
@@ -108,9 +112,10 @@ public class PlayerController : MonoBehaviour
             GameObject box = BoxParents[i].transform.GetChild(0).gameObject;
             Destroy(box);
             GameManager.Instance.RemoveBoxList(box);
+            Debug.Log(1);
         }
         curBox = 0;
-
+        UIManager.Instance.gameUI.UpdateBox(GameManager.Instance.boxStack);
         haveBox = false;
         boxTimer = 0f;
 
@@ -133,20 +138,19 @@ public class PlayerController : MonoBehaviour
             AudioManager.instance.PlaySfx(AudioManager.Sfx.GiveBox);
             DropBox();
 
-            if(!isStageMode)
-            {
-                GameManager.Instance.DeactivateLocation(collision.gameObject);
-            }
-            else
-            {
-
-            }
+ 
             
         }
         else if (collision.CompareTag("Enemy") || collision.CompareTag("Car") || collision.CompareTag("Explosion"))
         {
             Die();
             HandleCollisionAnimation(collision);
+        }
+        else if(collision.CompareTag("Bad"))
+        {
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.GiveBox);
+            DropBox();
+            haveSpecialBox = false;
         }
     }
 

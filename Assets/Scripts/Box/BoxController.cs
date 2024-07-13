@@ -7,9 +7,10 @@ public class BoxController : MonoBehaviour
 {
     public bool isGood;
     public bool isBad;
-
+    public bool isPlayer = false;
     private void Start()
     {
+        isPlayer = false;
         if(isGood || isBad)
         {
             StartCoroutine("StartDelete");
@@ -23,6 +24,10 @@ public class BoxController : MonoBehaviour
             transform.localPosition = Vector2.zero;
         }
 
+        if(transform.parent == null)
+        {
+            return;
+        }
         if(transform.parent.GetComponent<PlayerController>())
         {
             StopCoroutine("StartDelete");
@@ -32,12 +37,14 @@ public class BoxController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (transform.parent != null)
-        { return; }
-
+        if(isPlayer)
+        {
+            return;
+        }
+        
         if (collision.CompareTag("Player"))
         {
-          
+            isPlayer = true;
             PlayerController playerController = collision.GetComponent<PlayerController>();
             if (isBad || isGood)
             {

@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
 
     [Header("¹Ú½º")]
     public GameObject[] boxPrefab;
-    public int boxPreCount = 0;
+    public int boxStack = 0;
     public List<GameObject> boxList = new List<GameObject>();
     private float boxSpawnTimer = 0f;
     private float badBoxTimer = 0f;
@@ -68,30 +68,23 @@ public class GameManager : MonoBehaviour
     public bool isCount;
     public bool isLoaging;
 
-
-
-    
     void Start()
     {
         InitializeSingleton();
-
- 
         LoadPlayerData();
 
         if (SceneManager.GetActiveScene().buildIndex != 0)
         {
             target = FindObjectOfType<PlayerController>().gameObject;
         }
-      
     }
 
     void Update()
     {
-
-            if (!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
-            {
-                UpdateTimers();
-            }
+        if (!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
+        {
+            UpdateTimers();
+        }
     }
 
     private void InitializeSingleton()
@@ -108,7 +101,6 @@ public class GameManager : MonoBehaviour
 
     #region RandomMode
 
-
     private void LoadPlayerData()
     {
         BestPlayer = PlayerPrefs.GetString("BestPlayer", null);
@@ -118,7 +110,7 @@ public class GameManager : MonoBehaviour
     private void UpdateTimers()
     {
         gameTimer += Time.deltaTime;
-        if(gameTimer >= 60)
+        if (gameTimer >= 60)
         {
             score += score / 100 * 15;
             gameTimer = 0;
@@ -139,12 +131,12 @@ public class GameManager : MonoBehaviour
             boxSpawnTimer = 0f;
         }
         badBoxTimer += Time.deltaTime;
-        if(badBoxTimer >= 24f)
+        if (badBoxTimer >= 24f)
         {
-            SpawnBadBox();           
+            SpawnBadBox();
         }
         goodBoxTimer += Time.deltaTime;
-        if(goodBoxTimer >= 35f)
+        if (goodBoxTimer >= 35f)
         {
             SpawnGoodBox();
         }
@@ -172,21 +164,16 @@ public class GameManager : MonoBehaviour
 
     public void SpawnBox()
     {
-
         if (boxList.Count < maxBox)
         {
             int ranPoints = 0;
-            int ranNum = Random.Range(0, boxPrefab.Length);
-            for(int i =0; i < 100; i++)
+            int ranNum = Random.Range(0, 3);
+            for (int i = 0; i < 100; i++)
             {
                 ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
                 if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
                 {
                     break;
-                }
-                else
-                {
-                    continue;
                 }
             }
             GameObject box = Instantiate(boxPrefab[ranNum], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
@@ -194,6 +181,7 @@ public class GameManager : MonoBehaviour
             boxList.Add(box);
         }
     }
+
     public void SpawnBadBox()
     {
         badBoxTimer = 0f;
@@ -205,15 +193,10 @@ public class GameManager : MonoBehaviour
             {
                 break;
             }
-            else
-            {
-                continue;
-            }
         }
         GameObject box = Instantiate(boxPrefab[4], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
         box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
         boxList.Add(box);
-       
     }
 
     public void SpawnGoodBox()
@@ -226,10 +209,6 @@ public class GameManager : MonoBehaviour
             if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
             {
                 break;
-            }
-            else
-            {
-                continue;
             }
         }
         GameObject box = Instantiate(boxPrefab[5], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
@@ -286,7 +265,7 @@ public class GameManager : MonoBehaviour
         if (ZombieList.Count >= 20) return;
 
         int num = Random.Range(0, Zombie.Length);
-        int num1 = Random.Range(0 , zombieSpawnPoints.Length);
+        int num1 = Random.Range(0, zombieSpawnPoints.Length);
         Vector3 spawnPosition = zombieSpawnPoints[num1].transform.position;
         GameObject zombie = Instantiate(Zombie[num], spawnPosition, Quaternion.identity);
         ZombieList.Add(zombie);
@@ -305,56 +284,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //Vector3 GetRandomPositionOutsideCamera()
-    //{
-    //    Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
-    //    Vector3 cameraPosition = mainCamera.transform.position;
-
-    //    float verticalExtent = mainCamera.orthographicSize;
-    //    float horizontalExtent = verticalExtent * Screen.width / Screen.height;
-
-    //    Vector3 spawnPosition = Vector3.zero;
-    //    float spawnX, spawnY;
-
-    //    if (Random.value < 0.5f)
-    //    {
-    //        spawnX = (Random.value < 0.5f) ? cameraPosition.x - horizontalExtent - spawnDistance : cameraPosition.x + horizontalExtent + spawnDistance;
-    //        spawnX = Mathf.Clamp(spawnX, bounds.min.x, bounds.max.x);
-    //        spawnY = Random.Range(bounds.min.y, bounds.max.y);
-    //    }
-    //    else
-    //    {
-    //        spawnY = (Random.value < 0.5f) ? cameraPosition.y - verticalExtent - spawnDistance : cameraPosition.y + verticalExtent + spawnDistance;
-    //        spawnY = Mathf.Clamp(spawnY, bounds.min.y, bounds.max.y);
-    //        spawnX = Random.Range(bounds.min.x, bounds.max.x);
-    //    }
-
-    //    spawnPosition = new Vector3(spawnX, spawnY, 0);
-    //    return spawnPosition;
-    //}
-
-    //bool TryGetRandomNavMeshLocation(out Vector3 resultPosition)
-    //{
-    //    Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
-
-    //    for (int i = 0; i < 30; i++)
-    //    {
-    //        Vector3 randomPosition = new Vector3(
-    //            Random.Range(bounds.min.x, bounds.max.x),
-    //            Random.Range(bounds.min.y, bounds.max.y), 0
-    //        );
-
-    //        if (NavMesh.SamplePosition(randomPosition, out NavMeshHit hit, 3.0f, NavMesh.AllAreas))
-    //        {
-    //            resultPosition = hit.position;
-    //            return true;
-    //        }
-    //    }
-
-    //    resultPosition = Vector3.zero;
-    //    return false;
-    //}
-
     public void ScoreSet(float score, string name)
     {
         BestScore = score;
@@ -364,7 +293,4 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.Save();
     }
     #endregion
-
-
-
- }
+}
