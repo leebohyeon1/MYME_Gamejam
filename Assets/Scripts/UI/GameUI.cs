@@ -73,8 +73,12 @@ public class GameUI : MonoBehaviour
         if (nameInput.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Return))
         {
             InputName();
-        }
 
+        }
+        if (nameInput.gameObject.activeSelf)
+        {
+            return;
+        }
         HandleButtonInput();
     }
 
@@ -90,7 +94,7 @@ public class GameUI : MonoBehaviour
         {
             AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
         }
-
+        Debug.Log(curNum);
         totalScoreText.text = curNum.ToString();
         AudioManager.instance.StopSfx(AudioManager.Sfx.Slot);
     }
@@ -113,6 +117,7 @@ public class GameUI : MonoBehaviour
 
             if (scoreTimer > 2f)
             {
+                Debug.Log(totalScore);
                 totalScoreText.text = totalScore.ToString();
                 isTotalCalculated = false;
                 HandleBestScoreDisplay();
@@ -136,6 +141,7 @@ public class GameUI : MonoBehaviour
                 UpdateIndicatorPosition(screenPoint, i);
             }
         }
+       
     }
 
     private void UpdateIndicatorPosition(Vector3 screenPoint, int index)
@@ -171,31 +177,37 @@ public class GameUI : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         scoreText2.text = scoreText.text;
         BoxText2.text = BoxText.text;
-        float x = 1f;
-        if(GameManager.Instance.ZombieList.Count == 5)
+        float multiplier = 1f;
+
+        // Adjust multiplier based on zombie count
+        switch (GameManager.Instance.ZombieList.Count)
         {
-            x = 1.25f;
+            case 5:
+                multiplier = 1.25f;
+                break;
+            case 10:
+                multiplier = 1.5f;
+                break;
+            case 15:
+                multiplier = 2f;
+                break;
         }
-        else if(GameManager.Instance.ZombieList.Count == 10)
-        {
-            x = 1.5f;
-        }
-        else if(GameManager.Instance.ZombieList.Count == 15)
-        {
-            x = 2f;
-        }
-        totalScore = (box == 0 ? 1 : box) * score * x;
+
+        totalScore = (box == 0 ? 1 : box) * score * multiplier;
         scoreText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.4f);
         BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(1.5f);
+
+        totalScoreText.text = totalScore.ToString();
         if (totalScore > GameManager.Instance.BestScore)
         {
             NameBar.SetActive(true);
+            // Assuming you handle BestScore display elsewhere
         }
+
         StartCoroutine(SetButtons(true));
     }
-
     public IEnumerator SetButtons(bool active)
     {
         yield return new WaitForSeconds(1f);

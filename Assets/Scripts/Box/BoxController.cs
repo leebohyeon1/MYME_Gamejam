@@ -46,51 +46,20 @@ public class BoxController : MonoBehaviour
         {
             isPlayer = true;
             PlayerController playerController = collision.GetComponent<PlayerController>();
-            if (isBad || isGood)
-            {
-                if(isBad)
-                {
-                    GameManager.Instance.badBoxTrashCan.SetActive(true);
-                }
-                if (playerController.curBox > 0)
-                {
-                    return;
-                }
-                else
-                {
-                    int i = playerController.curBox;
-                    transform.SetParent(playerController.BoxParents[i].transform, false);
-                    transform.localPosition = Vector3.zero;
-                    Transform parent = transform.parent;
 
-                    transform.parent = null;
-                    transform.localScale = new Vector3(3f, 3f, 3f);
-                    transform.parent = parent;
-                    AudioManager.instance.PlaySfx(AudioManager.Sfx.GetBox);
+            int i = playerController.curBox;
+            transform.SetParent(playerController.BoxParents[i].transform, false);
+            transform.localPosition = Vector3.zero;
+            Transform parent = transform.parent;
 
-                    playerController.GetBox();
-                    playerController.haveSpecialBox = true;
-                }
-            }
-            else
-            {
-                if(playerController.haveSpecialBox)
-                {
-                    return;
-                }
-                int i = playerController.curBox;
-                transform.SetParent(playerController.BoxParents[i].transform, false);
-                transform.localPosition = Vector3.zero;
-                Transform parent = transform.parent;
+            transform.parent = null;
+            transform.localScale = new Vector3(3f, 3f, 3f);
+            transform.parent = parent;
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.GetBox);
 
-                transform.parent = null;
-                transform.localScale = new Vector3(3f, 3f, 3f);
-                transform.parent = parent;
-                AudioManager.instance.PlaySfx(AudioManager.Sfx.GetBox);
-
-                playerController.GetBox();
-            }
-         
+            playerController.GetBox();
+            playerController.haveSpecialBox = true;
+               
         }
     }
     IEnumerator StartDelete()

@@ -27,16 +27,11 @@ public class GameManager : MonoBehaviour
     public GameObject[] deliveryPoints;
     private int activeLocationsCount = 0;
 
-    public GameObject badBoxTrashCan;
-    public GameObject ST_deliveryPoint;
-
     [Header("¹Ú½º")]
     public GameObject[] boxPrefab;
     public int boxStack = 0;
     public List<GameObject> boxList = new List<GameObject>();
     private float boxSpawnTimer = 0f;
-    private float badBoxTimer = 0f;
-    private float goodBoxTimer = 0f;
 
     public GameObject[] ST_BoxSpawnPoints;
 
@@ -127,16 +122,7 @@ public class GameManager : MonoBehaviour
             SpawnBox();
             boxSpawnTimer = 0f;
         }
-        badBoxTimer += Time.deltaTime;
-        if (badBoxTimer >= 24f)
-        {
-            SpawnBadBox();
-        }
-        goodBoxTimer += Time.deltaTime;
-        if (goodBoxTimer >= 35f)
-        {
-            SpawnGoodBox();
-        }
+
         carSpawnTimer += Time.deltaTime;
         if (carSpawnTimer >= carSpawnInterval)
         {
@@ -179,46 +165,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SpawnBadBox()
-    {
-        if (boxList.Count < maxBox)
-        {
-            badBoxTimer = 0f;
-            int ranPoints = 0;
-            for (int i = 0; i < 100; i++)
-            {
-                ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
-                if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
-                {
-                    break;
-                }
-            }
-            GameObject box = Instantiate(boxPrefab[4], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
-            box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
-            boxList.Add(box);
-        }
-    }
-
-    public void SpawnGoodBox()
-    {
-        if (boxList.Count < maxBox)
-        {
-            goodBoxTimer = 0f;
-            int ranPoints = 0;
-            for (int i = 0; i < 100; i++)
-            {
-                ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
-                if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
-                {
-                    break;
-                }
-            }
-            GameObject box = Instantiate(boxPrefab[5], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
-            box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
-            boxList.Add(box);
-        }
-    }
-
+  
     public void RemoveBoxList(GameObject box)
     {
         boxList.Remove(box);
