@@ -26,8 +26,7 @@ public class OptionUI : MonoBehaviour
     public Slider BGMSlider;
     public Slider SFXSlider;
 
-    public AudioSource backgroundMusicSource;
-    public AudioSource[] sfxSource;
+
 
    
 
@@ -42,10 +41,6 @@ public class OptionUI : MonoBehaviour
         SaveOption();
 
    
-
-
-      
-
         // 슬라이더 이벤트 리스너 추가
         BGMSlider.onValueChanged.AddListener(SetBackgroundMusicVolume);
         SFXSlider.onValueChanged.AddListener(SetSFXVolume);
@@ -128,12 +123,12 @@ public class OptionUI : MonoBehaviour
             SetResolution(savedResolutionIndex);
 
             // 초기 슬라이더 값 설정
-            SetBackgroundMusicVolume(BGMSlider.value);
+            //SetBackgroundMusicVolume(BGMSlider.value);
 
-            for (int i = 0; i < sfxSource.Length; i++)
-            {
-                SetSFXVolume(SFXSlider.value);
-            }
+            //for (int i = 0; i < SoundManager.instance.sfxClips.Length; i++)
+            //{
+            //    SetSFXVolume(SFXSlider.value);
+            //}
         }
 
      
@@ -232,17 +227,18 @@ public class OptionUI : MonoBehaviour
 
     public void SetBackgroundMusicVolume(float volume)
     {
-        backgroundMusicSource.volume = volume;
+
+        //AudioManager.instance.musicSource.volume = volume;
+
+      
         PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
     }
 
     public void SetSFXVolume(float volume)
     {
-        for (int i = 0; i < sfxSource.Length; i++)
-        {
-            sfxSource[i].volume = volume;
+
+        //AudioManager.instance.sfxSource.volume = volume;
            
-        }
         PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
     }
 }

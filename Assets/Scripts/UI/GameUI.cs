@@ -236,6 +236,7 @@ public class GameUI : MonoBehaviour
         for(int i = 0; i < 3; i++)
         {
             CountText.text = Count.ToString();
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.CountDown);
             yield return new WaitForSeconds(1f);
             Count--;
         }

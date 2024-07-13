@@ -9,6 +9,7 @@ public class BtnMouseEvent : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         transform.DOScale(transform.localScale * 1.3f, 0.25f).SetEase(Ease.InQuad);
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Btn);
     }
     public void OnPointerExit(PointerEventData eventData)
     {
