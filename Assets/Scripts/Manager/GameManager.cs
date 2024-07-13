@@ -9,32 +9,25 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     //=========================================================
-    public bool isTimeMode = false;
 
-    #region randomMode
     [Header("점수")]
     public int score = 0;
-    public float scoreInterval = 1f;
+    public float scoreInterval = 0.1f;
     private float timer = 0f;
+    private float gameTimer = 0f;
     [Space(10f)]
     public int maxBox = 3;
     public int boxCount = 0;
     [Space(10f)]
-    public float totalScore;
     public bool isGameOver;
     public float BestScore = 0;
     public string BestPlayer;
-    #endregion
 
-    #region TImeMode
-    public float timeOut;
-    private float CurTime;
-    private float timeUp;
-    #endregion
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;
     private int activeLocationsCount = 0;
 
+    public GameObject badBoxTrashCan;
     public GameObject ST_deliveryPoint;
 
     [Header("박스")]
@@ -42,6 +35,8 @@ public class GameManager : MonoBehaviour
     public int boxPreCount = 0;
     public List<GameObject> boxList = new List<GameObject>();
     private float boxSpawnTimer = 0f;
+    private float badBoxTimer = 0f;
+    private float goodBoxTimer = 0f;
 
     public GameObject[] ST_BoxSpawnPoints;
 
@@ -59,10 +54,11 @@ public class GameManager : MonoBehaviour
     private GameObject target;
 
     [Header("좀비")]
+    public GameObject[] zombieSpawnPoints;
     public GameObject[] Zombie;
     public List<GameObject> ZombieList = new List<GameObject>();
     public Camera mainCamera;
-    public float ZombieSpawnInterval = 10f;
+    public float ZombieSpawnInterval = 5f;
     private float ZombieSpawnTimer = 0f;
 
     public GameObject background;
@@ -79,41 +75,23 @@ public class GameManager : MonoBehaviour
     {
         InitializeSingleton();
 
-        if(!isTimeMode)
-        {
-            LoadPlayerData();
+ 
+        LoadPlayerData();
 
-            if (SceneManager.GetActiveScene().buildIndex != 0)
-            {
-                target = FindObjectOfType<PlayerController>().gameObject;
-            }
-        }
-        else
+        if (SceneManager.GetActiveScene().buildIndex != 0)
         {
-            ST_deliveryPoint.SetActive(true);
-            CurTime = timeOut;
-
+            target = FindObjectOfType<PlayerController>().gameObject;
         }
       
     }
 
     void Update()
     {
-        if (!isTimeMode)
-        {
+
             if (!isGameOver && SceneManager.GetActiveScene().buildIndex != 0 && !isCount)
             {
                 UpdateTimers();
             }
-        }
-        else
-        {
-            if(CurTime == 0f)
-            {
-
-            }
-          
-        }
     }
 
     private void InitializeSingleton()
@@ -139,6 +117,13 @@ public class GameManager : MonoBehaviour
 
     private void UpdateTimers()
     {
+        gameTimer += Time.deltaTime;
+        if(gameTimer >= 60)
+        {
+            score += score / 100 * 15;
+            gameTimer = 0;
+        }
+
         timer += Time.deltaTime;
         if (timer >= scoreInterval)
         {
@@ -153,7 +138,16 @@ public class GameManager : MonoBehaviour
             SpawnBox();
             boxSpawnTimer = 0f;
         }
-
+        badBoxTimer += Time.deltaTime;
+        if(badBoxTimer >= 24f)
+        {
+            SpawnBadBox();           
+        }
+        goodBoxTimer += Time.deltaTime;
+        if(goodBoxTimer >= 35f)
+        {
+            SpawnGoodBox();
+        }
         carSpawnTimer += Time.deltaTime;
         if (carSpawnTimer >= carSpawnInterval)
         {
@@ -178,25 +172,74 @@ public class GameManager : MonoBehaviour
 
     public void SpawnBox()
     {
-      
+
         if (boxList.Count < maxBox)
         {
-            if (TryGetRandomNavMeshLocation(out Vector3 spawnPosition))
+            int ranPoints = 0;
+            int ranNum = Random.Range(0, boxPrefab.Length);
+            for(int i =0; i < 100; i++)
             {
-                int ranNum = Random.Range(0, boxPrefab.Length);
-                GameObject box = Instantiate(boxPrefab[ranNum], spawnPosition, Quaternion.identity);
-                boxList.Add(box);
+                ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+                if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+                {
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            GameObject box = Instantiate(boxPrefab[ranNum], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+            box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
+            boxList.Add(box);
+        }
+    }
+    public void SpawnBadBox()
+    {
+        badBoxTimer = 0f;
+        int ranPoints = 0;
+        for (int i = 0; i < 100; i++)
+        {
+            ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+            if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+            {
+                break;
+            }
+            else
+            {
+                continue;
             }
         }
+        GameObject box = Instantiate(boxPrefab[4], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+        box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
+        boxList.Add(box);
+       
+    }
+
+    public void SpawnGoodBox()
+    {
+        goodBoxTimer = 0f;
+        int ranPoints = 0;
+        for (int i = 0; i < 100; i++)
+        {
+            ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+            if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+            {
+                break;
+            }
+            else
+            {
+                continue;
+            }
+        }
+        GameObject box = Instantiate(boxPrefab[5], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+        box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
+        boxList.Add(box);
     }
 
     public void RemoveBoxList(GameObject box)
     {
         boxList.Remove(box);
-        if(isTimeMode)
-        {
-            CurTime += timeUp;
-        }
     }
 
     public void ActivateLocation()
@@ -240,10 +283,11 @@ public class GameManager : MonoBehaviour
 
     void SpawnZombie()
     {
-        if (ZombieList.Count >= 15) return;
+        if (ZombieList.Count >= 20) return;
 
         int num = Random.Range(0, Zombie.Length);
-        Vector3 spawnPosition = GetRandomPositionOutsideCamera();
+        int num1 = Random.Range(0 , zombieSpawnPoints.Length);
+        Vector3 spawnPosition = zombieSpawnPoints[num1].transform.position;
         GameObject zombie = Instantiate(Zombie[num], spawnPosition, Quaternion.identity);
         ZombieList.Add(zombie);
         IncreaseZombieSpeed();
@@ -261,55 +305,55 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    Vector3 GetRandomPositionOutsideCamera()
-    {
-        Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
-        Vector3 cameraPosition = mainCamera.transform.position;
+    //Vector3 GetRandomPositionOutsideCamera()
+    //{
+    //    Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
+    //    Vector3 cameraPosition = mainCamera.transform.position;
 
-        float verticalExtent = mainCamera.orthographicSize;
-        float horizontalExtent = verticalExtent * Screen.width / Screen.height;
+    //    float verticalExtent = mainCamera.orthographicSize;
+    //    float horizontalExtent = verticalExtent * Screen.width / Screen.height;
 
-        Vector3 spawnPosition = Vector3.zero;
-        float spawnX, spawnY;
+    //    Vector3 spawnPosition = Vector3.zero;
+    //    float spawnX, spawnY;
 
-        if (Random.value < 0.5f)
-        {
-            spawnX = (Random.value < 0.5f) ? cameraPosition.x - horizontalExtent - spawnDistance : cameraPosition.x + horizontalExtent + spawnDistance;
-            spawnX = Mathf.Clamp(spawnX, bounds.min.x, bounds.max.x);
-            spawnY = Random.Range(bounds.min.y, bounds.max.y);
-        }
-        else
-        {
-            spawnY = (Random.value < 0.5f) ? cameraPosition.y - verticalExtent - spawnDistance : cameraPosition.y + verticalExtent + spawnDistance;
-            spawnY = Mathf.Clamp(spawnY, bounds.min.y, bounds.max.y);
-            spawnX = Random.Range(bounds.min.x, bounds.max.x);
-        }
+    //    if (Random.value < 0.5f)
+    //    {
+    //        spawnX = (Random.value < 0.5f) ? cameraPosition.x - horizontalExtent - spawnDistance : cameraPosition.x + horizontalExtent + spawnDistance;
+    //        spawnX = Mathf.Clamp(spawnX, bounds.min.x, bounds.max.x);
+    //        spawnY = Random.Range(bounds.min.y, bounds.max.y);
+    //    }
+    //    else
+    //    {
+    //        spawnY = (Random.value < 0.5f) ? cameraPosition.y - verticalExtent - spawnDistance : cameraPosition.y + verticalExtent + spawnDistance;
+    //        spawnY = Mathf.Clamp(spawnY, bounds.min.y, bounds.max.y);
+    //        spawnX = Random.Range(bounds.min.x, bounds.max.x);
+    //    }
 
-        spawnPosition = new Vector3(spawnX, spawnY, 0);
-        return spawnPosition;
-    }
+    //    spawnPosition = new Vector3(spawnX, spawnY, 0);
+    //    return spawnPosition;
+    //}
 
-    bool TryGetRandomNavMeshLocation(out Vector3 resultPosition)
-    {
-        Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
+    //bool TryGetRandomNavMeshLocation(out Vector3 resultPosition)
+    //{
+    //    Bounds bounds = background.GetComponent<SpriteRenderer>().bounds;
 
-        for (int i = 0; i < 30; i++)
-        {
-            Vector3 randomPosition = new Vector3(
-                Random.Range(bounds.min.x, bounds.max.x),
-                Random.Range(bounds.min.y, bounds.max.y), 0
-            );
+    //    for (int i = 0; i < 30; i++)
+    //    {
+    //        Vector3 randomPosition = new Vector3(
+    //            Random.Range(bounds.min.x, bounds.max.x),
+    //            Random.Range(bounds.min.y, bounds.max.y), 0
+    //        );
 
-            if (NavMesh.SamplePosition(randomPosition, out NavMeshHit hit, 3.0f, NavMesh.AllAreas))
-            {
-                resultPosition = hit.position;
-                return true;
-            }
-        }
+    //        if (NavMesh.SamplePosition(randomPosition, out NavMeshHit hit, 3.0f, NavMesh.AllAreas))
+    //        {
+    //            resultPosition = hit.position;
+    //            return true;
+    //        }
+    //    }
 
-        resultPosition = Vector3.zero;
-        return false;
-    }
+    //    resultPosition = Vector3.zero;
+    //    return false;
+    //}
 
     public void ScoreSet(float score, string name)
     {
@@ -321,23 +365,6 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    #region TimeMode
 
-    public void St_SpawnBox()
-    {
-        if (boxList.Count < maxBox)
-        {
-           int ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
-            int ranNum = Random.Range(0, boxPrefab.Length);
-            GameObject box = Instantiate(boxPrefab[ranNum], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
-            boxList.Add(box);
-        }  
-    }
-    public void TimOut()
-    {
-
-    }
-
-    #endregion
 
  }

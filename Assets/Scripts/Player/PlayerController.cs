@@ -18,6 +18,9 @@ public class PlayerController : MonoBehaviour
     private Vector2 movement;
     private bool isDead;
 
+    public bool haveSpecialBox;
+    private float boxTimer = 0f;
+    public bool haveBox;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -31,6 +34,25 @@ public class PlayerController : MonoBehaviour
         {
             Move();
         }
+
+        if(haveBox)
+        {
+            boxTimer += Time.deltaTime;
+            if (boxTimer >= 15f)
+            {
+                if(boxTimer >= 16f)
+                {
+                    GameManager.Instance.score -= 100;
+                    boxTimer = 15f;
+                }
+              
+            }
+        }
+        else
+        {
+            boxTimer = 0f;
+        }
+       
     }
 
     void Move()
@@ -57,7 +79,10 @@ public class PlayerController : MonoBehaviour
 
     public void GetBox()
     {
+        haveBox = true; 
+        boxTimer = 0f;
         GameManager.Instance.ActivateLocation();
+        
         curBox++;
     }
 
@@ -65,25 +90,30 @@ public class PlayerController : MonoBehaviour
     {
         if (curBox <= 0) return;
 
-        if(!isStageMode)
+        if (curBox == 1)
         {
-            GameObject box = BoxParents[curBox - 1].transform.GetChild(0).gameObject;
-            Destroy(box);
-            GameManager.Instance.RemoveBoxList(box);
-            curBox--;
+            GameManager.Instance.score += 200;
+        }
+        else if (curBox == 1)
+        {
+            GameManager.Instance.score += 500;
         }
         else
         {
-            for(int i = 0; i < curBox; i++) 
-            {
-                GameObject box = BoxParents[i].transform.GetChild(0).gameObject;
-                Destroy(box);
-                GameManager.Instance.RemoveBoxList(box);
-            }
-            curBox = 0;
-          
+            GameManager.Instance.score += 1500;
         }
-       
+
+        for (int i = 0; i < curBox; i++) 
+        {
+            GameObject box = BoxParents[i].transform.GetChild(0).gameObject;
+            Destroy(box);
+            GameManager.Instance.RemoveBoxList(box);
+        }
+        curBox = 0;
+
+        haveBox = false;
+        boxTimer = 0f;
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

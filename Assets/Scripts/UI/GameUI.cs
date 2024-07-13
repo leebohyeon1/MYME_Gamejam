@@ -171,7 +171,20 @@ public class GameUI : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         scoreText2.text = scoreText.text;
         BoxText2.text = BoxText.text;
-        totalScore = (box == 0 ? 1 : box) * score;
+        float x = 1f;
+        if(GameManager.Instance.ZombieList.Count == 5)
+        {
+            x = 1.25f;
+        }
+        else if(GameManager.Instance.ZombieList.Count == 10)
+        {
+            x = 1.5f;
+        }
+        else if(GameManager.Instance.ZombieList.Count == 15)
+        {
+            x = 2f;
+        }
+        totalScore = (box == 0 ? 1 : box) * score * x;
         scoreText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(0.4f);
         BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
