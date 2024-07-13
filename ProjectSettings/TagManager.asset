@@ -8,6 +8,7 @@ TagManager:
   - Delivery
   - Enemy
   - Car
+  - Explosion
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Box
   - Delivery
   - Enemy
-  - 
+  - Explosion
   - 
   - 
   - 

@@ -62,7 +62,7 @@ public class GameUI : MonoBehaviour
                 NameBar.SetActive(true);
             }
             totalScoreText.text = curNum.ToString();
-            AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot,1);
+            AudioManager.instance.StopSfx(AudioManager.Sfx.Slot);
             SetButtons(true);
         }
 

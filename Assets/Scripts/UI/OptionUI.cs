@@ -56,8 +56,6 @@ public class OptionUI : MonoBehaviour
         {
             SaveBtn();
         }
-
-        AudioManager.instance.SaveVolume(BGMSlider.value, SFXSlider.value);
     }
     //==========================================================
 
@@ -182,20 +180,15 @@ public class OptionUI : MonoBehaviour
 
     public void LoadSound()
     {
-        if(PlayerPrefs.GetFloat("BGMVolume",0.5f) == 0.5f)
+        if(PlayerPrefs.HasKey("BGMVolume"))
         {
-            BGMSlider.value = 0.5f;
-            SetBackgroundMusicVolume(0.5f);
-            SFXSlider.value = 0.5f;
-            SetSFXVolume(0.5f);
-            
+            BGMSlider.value = PlayerPrefs.GetFloat("BGMVolume");
         }
-        else
+        
+        if(PlayerPrefs.HasKey("SFXVolume"))
         {
-            SetBackgroundMusicVolume(PlayerPrefs.GetFloat("BGMVolume"));
-            SetSFXVolume(PlayerPrefs.GetFloat("SFXVolume"));
+            SFXSlider.value = PlayerPrefs.GetFloat("SFXVolume");
         }
-       
     }
     #region Btn
     public void SaveBtn()
@@ -221,11 +214,9 @@ public class OptionUI : MonoBehaviour
     {
         PlayerPrefs.SetInt("resolution",resolutionIndex);
         PlayerPrefs.SetInt("screenMode", screenModeIndex);
-        SetBackgroundMusicVolume(BGMSlider.value);
-        SetSFXVolume(SFXSlider.value);
-       PlayerPrefs.Save();
-
-        AudioManager.instance.SaveVolume(BGMSlider.value, SFXSlider.value);
+        PlayerPrefs.SetFloat("BGMVolume", BGMSlider.value);
+        PlayerPrefs.SetFloat("SFXVolume", SFXSlider.value);
+        PlayerPrefs.Save();  
     }
 
     void ResetOption()
@@ -251,6 +242,12 @@ public class OptionUI : MonoBehaviour
     public void SetSFXVolume(float volume)
     { 
         PlayerPrefs.SetFloat("SFXVolume", volume); // º¼·ý °ª ÀúÀå
+    }
+
+    public void ChangeVolume()
+    {
+        SetBackgroundMusicVolume(BGMSlider.value);
+        SetSFXVolume(SFXSlider.value);
     }
 }
 

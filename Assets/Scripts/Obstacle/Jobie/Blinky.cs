@@ -12,7 +12,7 @@ public class Blinky : MonoBehaviour
     NavMeshAgent agent;
 
     public bool isBite = false;
-
+    public bool canMove = false;
     private const float MOVE_DELAY = 1f;
     void Start()
     {
@@ -21,14 +21,28 @@ public class Blinky : MonoBehaviour
             target = GameObject.FindGameObjectWithTag("Player");
         }
 
+        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        {
+            StartCoroutine(Move());
+        } 
+        
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
 
+    IEnumerator Move()
+    {
+        yield return new WaitForSeconds(3f);
+        canMove = true;
+    }
     // Update is called once per frame
     void Update()
     {
+        if(!canMove)
+        {
+            return;
+        }
         if (!isBite)
         {
             agent.SetDestination(target.transform.position);

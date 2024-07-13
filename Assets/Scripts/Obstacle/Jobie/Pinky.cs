@@ -12,7 +12,7 @@ public class Pinky : MonoBehaviour
 
     public float distance = 4f;
     public bool isBite = false;
-
+    public bool canMove = false;
     private const float MOVE_DELAY = 1f;
 
     void Start()
@@ -21,16 +21,27 @@ public class Pinky : MonoBehaviour
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-
+        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        {
+            StartCoroutine(Move());
+        }
         agent = GetComponent<NavMeshAgent>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-
+    IEnumerator Move()
+    {
+        yield return new WaitForSeconds(3f);
+        canMove = true;
+    }
     void Update()
     {
+        if (!canMove)
+        {
+            return;
+        }
         if (!isBite)
         {
             MoveTowardsPredictedPosition();

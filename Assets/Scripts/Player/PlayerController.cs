@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.CompareTag("Delivery"))
         {
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.GiveBox);
             DropBox();
             GameManager.Instance.DeactivateLocation(collision.gameObject);
         }
@@ -118,7 +119,7 @@ public class PlayerController : MonoBehaviour
             Die();
         }
 
-        if (collision.CompareTag("Car"))
+        if (collision.CompareTag("Car") || collision.CompareTag("Explosion"))
         {
             Die();
             animator.SetTrigger("isCar");

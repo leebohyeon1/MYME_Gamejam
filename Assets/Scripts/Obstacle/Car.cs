@@ -11,7 +11,8 @@ public class Car : MonoBehaviour
     public bool goRight = false;
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();   
+        rb = GetComponent<Rigidbody2D>();
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Car);
         if(goRight)
         {
             rb.velocity = Vector2.right * Speed;

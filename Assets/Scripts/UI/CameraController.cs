@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour, IListener
     // Update is called once per frame
     void Update()
     {
-        if(isZoomIn && AnyKeyExceptWASD())
+        if(isZoomIn && Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
         {
             gameUI.Panel.GetComponent<Image>().color = new Color(0, 0, 0, 0.5f);
             OnToTalScore();
@@ -40,7 +40,8 @@ public class CameraController : MonoBehaviour, IListener
     }
     public void OnToTalScore()
     {
-        gameUI.Panel.transform.GetChild(0).gameObject.SetActive(true);
+        gameUI.Panel.transform.GetChild(0).gameObject.SetActive(true);       
         StartCoroutine(gameUI.GameOver());
+        isZoomIn = false;
     }
 }

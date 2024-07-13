@@ -1040,13 +1040,11 @@ MonoBehaviour:
   - {fileID: 4383411141851491120}
   - {fileID: 6562195462859366891}
   boxPrefab:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  boxList:
   - {fileID: 5410754739146455909, guid: a1347d47140a4f14e909b2befd3686af, type: 3}
   - {fileID: 5410754739146455909, guid: 7a53532f4e4bf4641ae02518c1139a3f, type: 3}
   - {fileID: 5410754739146455909, guid: fd3b4abc0ddf2e4419d879bd553d596d, type: 3}
+  boxPreCount: 0
+  boxList: []
   carSpawnPoint:
   - {fileID: 4058004870399766389}
   - {fileID: 221652360847946559}

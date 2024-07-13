@@ -14,7 +14,7 @@ public class Inky : MonoBehaviour
 
     GameObject blinky;
     public bool isBite = false;
-
+    public bool canMove = false;
     private const float MOVE_DELAY = 1f;
     void Start()
     {
@@ -23,14 +23,25 @@ public class Inky : MonoBehaviour
             target = GameObject.FindGameObjectWithTag("Player");
         }
         blinky = FindAnyObjectByType<Blinky>().gameObject;
-
+        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        {
+            StartCoroutine(Move());
+        }
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-
+    IEnumerator Move()
+    {
+        yield return new WaitForSeconds(3f);
+        canMove = true;
+    }
     private void Update()
     {
+        if (!canMove)
+        {
+            return;
+        }
         if (blinky == null)
         {
             return;

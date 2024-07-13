@@ -23,6 +23,7 @@ public class BoxController : MonoBehaviour
 
         if (collision.CompareTag("Player"))
         {
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.GetBox);
             got = true;
             PlayerController playerController = collision.GetComponent<PlayerController>();
             int i = playerController.curBox;

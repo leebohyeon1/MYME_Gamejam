@@ -2,6 +2,7 @@ using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -17,7 +18,7 @@ public class Clyde : MonoBehaviour
 
     private bool isScattering = false;
     public bool isBite = false;
-
+    public bool canMove = false;
     private const float MOVE_DELAY = 1f;
     void Start()
     {
@@ -25,14 +26,25 @@ public class Clyde : MonoBehaviour
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-
+        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        {
+            StartCoroutine(Move());
+        }
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-
+    IEnumerator Move()
+    {
+        yield return new WaitForSeconds(3f);
+        canMove = true;
+    }
     private void Update()
     {
+        if (!canMove)
+        {
+            return;
+        }
         if (!isBite)
         {
             float distanceToPlayer = Vector3.Distance(transform.position, target.transform.position);

@@ -28,8 +28,11 @@ public class AudioManager : MonoBehaviour
         Lose = 2,
         Slot = 3,
         JustScore =4,
-        BestScore =5
-
+        BestScore =5,
+        GetBox = 6,
+        GiveBox = 7,
+        Bomb = 8,
+        Car = 9
      
     };
 
@@ -77,16 +80,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySfx(Sfx sfx, int stopSameSound = 0)
+    public void PlaySfx(Sfx sfx)
     {
         for (int index = 0; index < sfxPlayers.Length; index++)
         {
             int loopIndex = (index + channelIndex) % sfxPlayers.Length;
-
-            if (stopSameSound != 0 && sfxPlayers[loopIndex].isPlaying && sfxPlayers[loopIndex].clip == sfxClips[(int)sfx])
-            {
-                sfxPlayers[loopIndex].Stop();
-            }
 
             // 현재 채널이 재생 중이 아니면 새로운 사운드 재생
             if (!sfxPlayers[loopIndex].isPlaying)
@@ -98,18 +96,19 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
-
-    public void SaveVolume(float bgmVolume, float sfxVolume)
+    public void StopSfx(Sfx sfx)
     {
-        this.bgmVolume = bgmVolume;
-        this.sfxVolume = sfxVolume;
-        bgmPlayer.volume = bgmVolume;
-
-        for (int index = 0; index < sfxPlayers.Length; index++)
+        for (int i = 0; i < sfxPlayers.Length; i++)
         {
-            sfxPlayers[index].volume = sfxVolume;
+
+            if (sfxPlayers[i].clip == sfxClips[(int)sfx] && sfxPlayers[i].isPlaying)
+            {
+                sfxPlayers[i].Stop();
+                break;
+            }
         }
     }
+
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
