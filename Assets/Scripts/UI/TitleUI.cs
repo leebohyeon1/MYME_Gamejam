@@ -35,6 +35,7 @@ public class TitleUI : MonoBehaviour
     #region Button
     public void StartBtn()
     {
+        PlayerPrefs.SetInt("Count", 1);
         SceneManager.LoadScene(2);
         EventManager.Instance.PostNotification(EVENT_TYPE.SCENE_LOAD, this, 1);
     }

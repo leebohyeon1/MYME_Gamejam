@@ -26,9 +26,12 @@ public class Clyde : MonoBehaviour
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        if (PlayerPrefs.HasKey("Count"))
         {
-            StartCoroutine(Move());
+            if (PlayerPrefs.GetInt("Count") == 1)
+            {
+                StartCoroutine(Move());
+            }
         }
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;

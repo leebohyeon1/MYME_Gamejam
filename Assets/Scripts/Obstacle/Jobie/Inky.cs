@@ -23,9 +23,12 @@ public class Inky : MonoBehaviour
             target = GameObject.FindGameObjectWithTag("Player");
         }
         blinky = FindAnyObjectByType<Blinky>().gameObject;
-        if (PlayerPrefs.GetInt("Count", 0) == 1)
+        if (PlayerPrefs.HasKey("Count"))
         {
-            StartCoroutine(Move());
+            if (PlayerPrefs.GetInt("Count") == 1)
+            {
+                StartCoroutine(Move());
+            }
         }
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         agent.updateRotation = false;
@@ -42,6 +45,7 @@ public class Inky : MonoBehaviour
         {
             return;
         }
+
         if (blinky == null)
         {
             return;

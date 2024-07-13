@@ -12,7 +12,7 @@ public class Car : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        AudioManager.instance.PlaySfx(AudioManager.Sfx.Car);
+      
         if(goRight)
         {
             rb.velocity = Vector2.right * Speed;
@@ -21,7 +21,8 @@ public class Car : MonoBehaviour
         {
             rb.velocity = Vector2.left * Speed;
         }
-       
+
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Car);
     }
 
     // Update is called once per frame

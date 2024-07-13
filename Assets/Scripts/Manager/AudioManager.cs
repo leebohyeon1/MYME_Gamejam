@@ -48,7 +48,7 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
         }
         Init();
-        channelIndex = sfxClips.Length;
+
     }
 
     private void Start()
