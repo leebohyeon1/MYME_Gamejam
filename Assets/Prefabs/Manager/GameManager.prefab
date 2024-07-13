@@ -31,6 +31,37 @@ Transform:
   m_Father: {fileID: 7347404676173116987}
   m_RootOrder: -2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &815887551062079463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 221652360847946559}
+  m_Layer: 0
+  m_Name: CarSpawner (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &221652360847946559
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815887551062079463}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -90.7, y: 8.1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4670838348165585883}
+  m_RootOrder: -2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &995076603271484341
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,6 +1007,7 @@ Transform:
   - {fileID: 6856904235991890113}
   - {fileID: 7347404676173116987}
   - {fileID: 4058004870399766389}
+  - {fileID: 221652360847946559}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -997,6 +1029,7 @@ MonoBehaviour:
   boxCount: 0
   totalScore: 0
   isGameOver: 0
+  BestScore: 0
   deliveryPoints:
   - {fileID: 5244261789967215260}
   - {fileID: 5144578391533536091}
@@ -1007,8 +1040,12 @@ MonoBehaviour:
   - {fileID: 6562195462859366891}
   boxPrefab: {fileID: 5410754739146455909, guid: a1347d47140a4f14e909b2befd3686af, type: 3}
   boxList: []
-  carSpawnPoint: {fileID: 4058004870399766389}
-  CarPrefab: {fileID: 6086210449438516449, guid: d7f984fa01469aa42aa0406b6cdcf392, type: 3}
+  carSpawnPoint:
+  - {fileID: 4058004870399766389}
+  - {fileID: 221652360847946559}
+  CarPrefab:
+  - {fileID: 6086210449438516449, guid: d7f984fa01469aa42aa0406b6cdcf392, type: 3}
+  - {fileID: 6086210449438516449, guid: 74bd3bb6743dec8489f70477891dff18, type: 3}
   carSpawnInterval: 2
   explosionPoint: {x: 0, y: 0}
   dynamitePrefab: {fileID: 8727062178168139052, guid: 35d5bffb254bd4b4680e9d50142d51d4, type: 3}

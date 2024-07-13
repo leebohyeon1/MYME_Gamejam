@@ -8,10 +8,19 @@ public class Car : MonoBehaviour
 
     public float Speed = 30f;
 
+    public bool goRight = false;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();   
-        rb.velocity = Vector2.left * Speed;
+        if(goRight)
+        {
+            rb.velocity = Vector2.right * Speed;
+        }
+        else
+        {
+            rb.velocity = Vector2.left * Speed;
+        }
+       
     }
 
     // Update is called once per frame

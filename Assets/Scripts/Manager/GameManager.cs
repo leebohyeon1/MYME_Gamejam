@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,7 +21,8 @@ public class GameManager : MonoBehaviour
     public float totalScore;
     public bool isGameOver;
     public float BestScore = 0;
-    
+    public string BestPlayer;
+
     [Header("배달 장소")]
     public GameObject[] deliveryPoints;
     private int activeLocationsCount = 0;
@@ -32,8 +34,8 @@ public class GameManager : MonoBehaviour
     private float boxSpawnTimer = 0f;
 
     [Header("자동차")]
-    public Transform carSpawnPoint;
-    public GameObject CarPrefab;
+    public Transform[] carSpawnPoint;
+    public GameObject[] CarPrefab;
     public float carSpawnInterval = 2f;
     private float carSpawnTimer = 0f;
 
@@ -57,6 +59,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+
         if (Instance != null && Instance != this)
         {
             DestroyImmediate(this.gameObject);
@@ -66,13 +69,20 @@ public class GameManager : MonoBehaviour
             Instance = this;
         }
 
-        target = FindObjectOfType<PlayerController>().gameObject;
+        if (SceneManager.GetActiveScene().buildIndex != 0)
+        {
+            target = FindObjectOfType<PlayerController>().gameObject;
+        }
+           
+
+        BestPlayer = PlayerPrefs.GetString("BestPlayer", null);
+        BestScore = PlayerPrefs.GetFloat("BestScore", 0f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!isGameOver)
+        if(!isGameOver && SceneManager.GetActiveScene().buildIndex != 0)
         {
             timer += Time.deltaTime;
             if (timer >= scoreInterval)
@@ -171,7 +181,11 @@ public class GameManager : MonoBehaviour
 
     public void SpawnCar()
     {
-        Instantiate(CarPrefab, carSpawnPoint.position,Quaternion.identity);
+        for(int i = 0; i < carSpawnPoint.Length; i++)
+        {
+            Instantiate(CarPrefab[i], carSpawnPoint[i].position, Quaternion.identity);
+        }
+       
     }
 
     public void Bomb()
@@ -252,11 +266,11 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    public void SetBestScore(float score)
+    public void ScoreSet(float score,string name) 
     {
-        PlayerPrefs.SetFloat("BestScore", score);
         BestScore = score;
-        PlayerPrefs.Save();
+        BestPlayer = name;
 
+        PlayerPrefs.Save();
     }
 }

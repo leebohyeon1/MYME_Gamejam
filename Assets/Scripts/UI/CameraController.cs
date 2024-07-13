@@ -7,14 +7,14 @@ using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour, IListener
 {
-    CinemachineVirtualCamera camera;
+    CinemachineVirtualCamera Camera;
 
     public GameUI gameUI;
     bool isZoomIn = false;
     // Start is called before the first frame update
     void Start()
     {
-        camera = GetComponent<CinemachineVirtualCamera>();
+        Camera = GetComponent<CinemachineVirtualCamera>();
         EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);   
     }
 
@@ -30,7 +30,7 @@ public class CameraController : MonoBehaviour, IListener
 
     public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
     {
-        DOTween.To(() => camera.m_Lens.OrthographicSize, x => camera.m_Lens.OrthographicSize = x, 3.32f, 3)
+        DOTween.To(() => Camera.m_Lens.OrthographicSize, x => Camera.m_Lens.OrthographicSize = x, 3.32f, 3)
             .OnComplete(() => OnTotalPanel());
         isZoomIn = true;
     }

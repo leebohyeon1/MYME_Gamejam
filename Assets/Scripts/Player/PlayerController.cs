@@ -14,15 +14,23 @@ public class PlayerController : MonoBehaviour
 
     Animator animator;
 
+    bool isDead;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+
+        isDead = false;
     }
 
     void Update()
     {
-        Move();
+        if(!isDead)
+        {
+            Move();
+        }
+        
     }
 
     void Move()
@@ -69,10 +77,9 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            gameObject.SetActive(false);
-            EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
-            GameManager.Instance.isGameOver = true;
+            Die();
         }
+      
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -85,14 +92,37 @@ public class PlayerController : MonoBehaviour
 
         if (collision.CompareTag("Enemy"))
         {
-            gameObject.SetActive(false);
-            EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
-            GameManager.Instance.isGameOver = true;
+            Die();
+        }
+
+        if (collision.CompareTag("Car"))
+        {
+            Die();
+            animator.SetTrigger("isCar");
+            if ((collision.transform.position.x -transform.position.x) > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
+            transform.Translate(-(collision.transform.position - transform.position) * 2, Space.World);
+           
         }
     }
     public Vector2 GetVector()
     {        
         return movement.normalized;
+    }
+
+    public void Die()
+    {
+        rb.velocity = Vector3.zero;
+        GetComponent<Collider2D>().enabled = false;
+        EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
+        GameManager.Instance.isGameOver = true;
+        isDead = true;
     }
 
 }

@@ -12,6 +12,11 @@ public class GameUI : MonoBehaviour
     public Button[] Btn;
     public Camera mainCamera;
     public Image[] indicator;
+    
+    public GameObject NameBar;
+    public TMP_InputField nameInput;
+    [SerializeField]
+    public string nameT = null;
 
     private const string ScorePrefix = "Score: ";
     private const string BoxPrefix = "Box: ";
@@ -20,7 +25,10 @@ public class GameUI : MonoBehaviour
     private float curNum, scoreTimer, timer;
     private bool isTotalCalculated;
 
-    
+    private void Awake()
+    {
+        nameT = nameInput.GetComponent<TMP_InputField>().text;
+    }
     private void Start()
     {
         mainCamera = Camera.main;
@@ -40,6 +48,7 @@ public class GameUI : MonoBehaviour
             if (totalScore > GameManager.Instance.BestScore)
             {
                 totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
+                NameBar.SetActive(true);
             }
             totalScoreText.text = curNum.ToString();
             SetButtons(true);
@@ -52,7 +61,7 @@ public class GameUI : MonoBehaviour
             {
                 if (scoreTimer > 1.4f)
                 {
-                    if (totalScore > PlayerPrefs.GetFloat("BestScore",0f))
+                    if (totalScore > GameManager.Instance.BestScore)
                     {
                         totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
                     }
@@ -61,7 +70,7 @@ public class GameUI : MonoBehaviour
                     {
                         totalScoreText.text = totalScore.ToString();
                         isTotalCalculated = false;
-                        GameManager.Instance.SetBestScore(totalScore);
+
                         return;
                     }
                     
@@ -70,8 +79,20 @@ public class GameUI : MonoBehaviour
             }
         }
         UpdateBoxIndicators();
-    }
 
+        if(nameInput.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Return))
+        {
+            InputName();
+        }
+    }
+    public void InputName()
+    {
+        nameT = nameInput.text;
+        PlayerPrefs.SetString("BestPlayer", nameT);
+        PlayerPrefs.SetFloat("BestScore", totalScore);
+       GameManager.Instance.ScoreSet(totalScore, nameT);
+        NameBar.SetActive(false );
+    }
     private void UpdateTotalScoreUI()
     {
         timer += Time.deltaTime;
@@ -155,7 +176,10 @@ public class GameUI : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
         yield return new WaitForSeconds(1.5f);
-
+        if (totalScore > GameManager.Instance.BestScore)
+        {
+            NameBar.SetActive(true);
+        }
         SetButtons(true);
     }
 
