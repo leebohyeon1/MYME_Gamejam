@@ -149,6 +149,7 @@ public class PlayerController : MonoBehaviour
         GetComponent<Collider2D>().enabled = false;
         EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
         GameManager.Instance.isGameOver = true;
+        AudioManager.instance.PlaySfx(AudioManager.Sfx.Lose);
         isDead = true;
 
         ThrowAllObjects();
@@ -160,12 +161,10 @@ public class PlayerController : MonoBehaviour
         if(i == 0)
         {
             animator.SetTrigger("isRightZombie");
-            Debug.Log("¿À¸¥ÂÊ");
         }
         else if (i == 1)
         {
             animator.SetTrigger("isLeftZombie");
-            Debug.Log("¿ÞÂÊ");
         }
         StartCoroutine(DestroyZom(Zombie));
     }

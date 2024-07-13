@@ -24,8 +24,13 @@ public class AudioManager : MonoBehaviour
     public enum Sfx 
     {
         Btn =0,
-        CountDown = 1
-        
+        CountDown = 1,
+        Lose = 2,
+        Slot = 3,
+        JustScore =4,
+        BestScore =5
+
+     
     };
 
     void Awake()
@@ -72,20 +77,37 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySfx(Sfx sfx)
+    public void PlaySfx(Sfx sfx, int stopSameSound = 0)
     {
         for (int index = 0; index < sfxPlayers.Length; index++)
         {
             int loopIndex = (index + channelIndex) % sfxPlayers.Length;
 
-            if (sfxPlayers[loopIndex].isPlaying)
-                continue;
+            if (stopSameSound != 0 && sfxPlayers[loopIndex].isPlaying && sfxPlayers[loopIndex].clip == sfxClips[(int)sfx])
+            {
+                sfxPlayers[loopIndex].Stop();
+            }
 
+            // 현재 채널이 재생 중이 아니면 새로운 사운드 재생
+            if (!sfxPlayers[loopIndex].isPlaying)
+            {
+                channelIndex = loopIndex; // 채널 인덱스 업데이트
+                sfxPlayers[loopIndex].clip = sfxClips[(int)sfx]; // 새 클립 할당
+                sfxPlayers[loopIndex].Play(); // 재생
+                break; // 반복 중단
+            }
+        }
+    }
 
-            channelIndex = loopIndex;
-            sfxPlayers[loopIndex].clip = sfxClips[(int)sfx];
-            sfxPlayers[loopIndex].Play();
-            break;
+    public void SaveVolume(float bgmVolume, float sfxVolume)
+    {
+        this.bgmVolume = bgmVolume;
+        this.sfxVolume = sfxVolume;
+        bgmPlayer.volume = bgmVolume;
+
+        for (int index = 0; index < sfxPlayers.Length; index++)
+        {
+            sfxPlayers[index].volume = sfxVolume;
         }
     }
 

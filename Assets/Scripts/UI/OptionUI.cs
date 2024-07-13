@@ -38,6 +38,10 @@ public class OptionUI : MonoBehaviour
         ClearScreenMode();
 
         SetInitialResolution();
+
+        LoadSound();
+
+
         SaveOption();
 
    
@@ -52,6 +56,8 @@ public class OptionUI : MonoBehaviour
         {
             SaveBtn();
         }
+
+        AudioManager.instance.SaveVolume(BGMSlider.value, SFXSlider.value);
     }
     //==========================================================
 
@@ -114,21 +120,14 @@ public class OptionUI : MonoBehaviour
                 }
             }
 
-            BGMSlider.value = 0.5f;
-            SFXSlider.value = 0.5f;
+
         }
         else
         {
             // 저장된 값이 있을 경우 그 값으로 설정
             SetResolution(savedResolutionIndex);
 
-            // 초기 슬라이더 값 설정
-            //SetBackgroundMusicVolume(BGMSlider.value);
-
-            //for (int i = 0; i < SoundManager.instance.sfxClips.Length; i++)
-            //{
-            //    SetSFXVolume(SFXSlider.value);
-            //}
+            
         }
 
      
@@ -181,6 +180,23 @@ public class OptionUI : MonoBehaviour
     }
     #endregion
 
+    public void LoadSound()
+    {
+        if(PlayerPrefs.GetFloat("BGMVolume",0.5f) == 0.5f)
+        {
+            BGMSlider.value = 0.5f;
+            SetBackgroundMusicVolume(0.5f);
+            SFXSlider.value = 0.5f;
+            SetSFXVolume(0.5f);
+            
+        }
+        else
+        {
+            SetBackgroundMusicVolume(PlayerPrefs.GetFloat("BGMVolume"));
+            SetSFXVolume(PlayerPrefs.GetFloat("SFXVolume"));
+        }
+       
+    }
     #region Btn
     public void SaveBtn()
     {
@@ -205,9 +221,11 @@ public class OptionUI : MonoBehaviour
     {
         PlayerPrefs.SetInt("resolution",resolutionIndex);
         PlayerPrefs.SetInt("screenMode", screenModeIndex);
-        PlayerPrefs.SetFloat("BGMVolume", BGMSlider.value);
-        PlayerPrefs.SetFloat("SFXVolume", SFXSlider.value);
+        SetBackgroundMusicVolume(BGMSlider.value);
+        SetSFXVolume(SFXSlider.value);
        PlayerPrefs.Save();
+
+        AudioManager.instance.SaveVolume(BGMSlider.value, SFXSlider.value);
     }
 
     void ResetOption()
@@ -227,18 +245,11 @@ public class OptionUI : MonoBehaviour
 
     public void SetBackgroundMusicVolume(float volume)
     {
-
-        //AudioManager.instance.musicSource.volume = volume;
-
-      
         PlayerPrefs.SetFloat("BGMVolume", volume); // 볼륨 값 저장
     }
 
     public void SetSFXVolume(float volume)
-    {
-
-        //AudioManager.instance.sfxSource.volume = volume;
-           
+    { 
         PlayerPrefs.SetFloat("SFXVolume", volume); // 볼륨 값 저장
     }
 }

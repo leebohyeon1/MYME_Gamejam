@@ -21,7 +21,7 @@ public class CameraController : MonoBehaviour, IListener
     // Update is called once per frame
     void Update()
     {
-        if(isZoomIn && Input.anyKey && !Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.D))
+        if(isZoomIn && AnyKeyExceptWASD())
         {
             gameUI.Panel.GetComponent<Image>().color = new Color(0, 0, 0, 0.5f);
             OnToTalScore();

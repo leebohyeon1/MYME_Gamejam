@@ -24,6 +24,7 @@ public class GameUI : MonoBehaviour
     private int score, box;
     private float totalScore;
     private float curNum, scoreTimer, timer;
+    [SerializeField]
     private bool isTotalCalculated;
 
     int Count = 3;
@@ -61,6 +62,7 @@ public class GameUI : MonoBehaviour
                 NameBar.SetActive(true);
             }
             totalScoreText.text = curNum.ToString();
+            AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot,1);
             SetButtons(true);
         }
 
@@ -69,6 +71,7 @@ public class GameUI : MonoBehaviour
             scoreTimer += Time.deltaTime;
             if (scoreTimer > 0.9f)
             {
+                AudioManager.instance.PlaySfx(AudioManager.Sfx.Slot);
                 if (scoreTimer > 1.4f)
                 {
                     if (totalScore > GameManager.Instance.BestScore)
@@ -80,8 +83,15 @@ public class GameUI : MonoBehaviour
                     {
                         totalScoreText.text = totalScore.ToString();
                         isTotalCalculated = false;
-
-                        return;
+                        if (totalScore > GameManager.Instance.BestScore)
+                        {
+                            AudioManager.instance.PlaySfx(AudioManager.Sfx.BestScore);
+                        }
+                        else
+                        {
+                            AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
+                        }
+                            return;
                     }
                     
                 }
