@@ -52,7 +52,7 @@ public class GameUI : MonoBehaviour
             {
                 if (scoreTimer > 1.4f)
                 {
-                    if (totalScore > GameManager.Instance.BestScore)
+                    if (totalScore > PlayerPrefs.GetFloat("BestScore",0f))
                     {
                         totalScoreText.rectTransform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.2f).SetEase(Ease.InOutBack);
                     }
@@ -61,6 +61,7 @@ public class GameUI : MonoBehaviour
                     {
                         totalScoreText.text = totalScore.ToString();
                         isTotalCalculated = false;
+                        GameManager.Instance.SetBestScore(totalScore);
                         return;
                     }
                     

@@ -38,6 +38,15 @@ public class Inky : MonoBehaviour
             (target.GetComponent<PlayerController>().GetVector() * distance));
 
         agent.SetDestination(vector);
+
+        if (vector.x - transform.position.x > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 
     private void OnDrawGizmos()

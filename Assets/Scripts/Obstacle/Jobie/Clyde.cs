@@ -35,6 +35,14 @@ public class Clyde : MonoBehaviour
         if (distanceToPlayer > distance && isScattering == false)
         {
             ChasePlayer();
+            if (target.transform.position.x - transform.position.x > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
         }
         else
         {
@@ -44,7 +52,17 @@ public class Clyde : MonoBehaviour
                 isScattering = true;
             }
             MoveToRandomPoint();
+            if (randomMovePoint.x - transform.position.x > 0)
+            {
+                GetComponent<SpriteRenderer>().flipX = true;
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().flipX = false;
+            }
         }
+
+        
     }
 
     void ChasePlayer()

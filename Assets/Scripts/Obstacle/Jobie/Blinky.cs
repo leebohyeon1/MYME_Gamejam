@@ -9,6 +9,8 @@ public class Blinky : MonoBehaviour
 
     NavMeshAgent agent;
 
+    
+
     void Start()
     {
         if (target == null)
@@ -25,5 +27,15 @@ public class Blinky : MonoBehaviour
     void Update()
     {
         agent.SetDestination(target.transform.position);
+
+
+        if(target.transform.position.x - transform.position.x >0) 
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 }

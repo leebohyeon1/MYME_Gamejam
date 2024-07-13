@@ -251,4 +251,12 @@ public class GameManager : MonoBehaviour
         resultPosition = Vector3.zero;
         return false;
     }
+
+    public void SetBestScore(float score)
+    {
+        PlayerPrefs.SetFloat("BestScore", score);
+        BestScore = score;
+        PlayerPrefs.Save();
+
+    }
 }

@@ -33,5 +33,14 @@ public class Pinky : MonoBehaviour
     {
         Vector2 Target = new Vector2(target.transform.position.x, target.transform.position.y) + (target.GetComponent<PlayerController>().GetVector() * distance);
         agent.SetDestination(Target);
+
+        if (Target.x - transform.position.x > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
     }
 }

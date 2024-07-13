@@ -12,20 +12,46 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     Vector2 movement;
 
+    Animator animator;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
+    {
+        Move();
+    }
+
+    void Move()
     {
         float moveHorizontal = Input.GetAxisRaw("Horizontal");
         float moveVertical = Input.GetAxisRaw("Vertical");
 
         movement = new Vector2(moveHorizontal, moveVertical);
         rb.velocity = movement * speed;
-    }
 
+        if(moveHorizontal > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        else if(moveHorizontal < 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+
+        if (moveHorizontal == 0 && moveVertical == 0)
+        {
+            animator.SetBool("isMove", false);
+        }
+        else
+        {
+            animator.SetBool("isMove", true);
+        }
+       
+    }
     public void GetBox()
     {
         curBox++;
