@@ -396,7 +396,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Press: {fileID: 1754376497}
   LoadingText: {fileID: 2012063970}
-  A: 0
 --- !u!114 &163141782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2165,7 +2164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2641422819024680900, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4671464758860242858, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
       propertyPath: m_fontSize
@@ -2175,6 +2174,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 1500
       objectReference: {fileID: 0}
+    - target: {fileID: 5235560426884619436, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bc946ece7bc1fc541bcd754fa6a55954, type: 3}
     - target: {fileID: 5432133793670344085, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
       propertyPath: m_Name
       value: UIManager
@@ -2203,8 +2206,33 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033245844949708574, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7533288225027278959, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8109788250162003355, guid: 8cb26eaf6bd8a674bb564a5a3ef9155d, type: 3}
       insertIndex: 5
