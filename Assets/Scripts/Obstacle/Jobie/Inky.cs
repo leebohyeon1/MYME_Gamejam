@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -12,7 +13,9 @@ public class Inky : MonoBehaviour
     public float distance = 2f;
 
     GameObject blinky;
+    public bool isBite = false;
 
+    private const float MOVE_DELAY = 1f;
     void Start()
     {
         if (target == null)
@@ -28,11 +31,16 @@ public class Inky : MonoBehaviour
 
     private void Update()
     {
-        InkyMove();
+        if (blinky == null)
+        {
+            return;
+        }
+        if (!isBite)
+            InkyMove();
     }
     void InkyMove()
     {
-
+        
         Vector2 vector = new Vector2(blinky.transform.position.x, blinky.transform.position.y) - 
             (new Vector2(target.transform.position.x, target.transform.position.y) +
             (target.GetComponent<PlayerController>().GetVector() * distance));
@@ -49,9 +57,22 @@ public class Inky : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        //Gizmos.color = Color.blue;
-        //Gizmos.DrawWireSphere(transform.position, radius);
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            isBite = true;
+            ProcessCollision(collision);
+        }
+    }
+
+    void ProcessCollision(Collision2D collision)
+    {
+        float targetOffsetX = (collision.transform.position.x - transform.position.x > 0) ? -1 : 1;
+        bool shouldFlip = collision.gameObject.GetComponent<SpriteRenderer>().flipX == false;
+
+        transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
+
+        collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
     }
 }

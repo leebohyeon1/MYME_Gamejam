@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
 
     [Header("¹Ú½º")]
     //public Transform[] boxSpawnPoints;
-    public GameObject boxPrefab;
+    public GameObject[] boxPrefab;
+    public int boxPreCount = 0;
     public List<GameObject> boxList = new List<GameObject>();
     private float boxSpawnTimer = 0f;
 
@@ -132,12 +133,16 @@ public class GameManager : MonoBehaviour
     {
         if (boxList.Count < maxBox)
         {
-
             Vector3 spawnPosition;
             if (TryGetRandomNavMeshLocation(out spawnPosition))
             {
-                GameObject box = Instantiate(boxPrefab, spawnPosition, Quaternion.identity);
+                GameObject box = Instantiate(boxPrefab[boxPreCount], spawnPosition, Quaternion.identity);
+                boxPreCount++;
                 boxList.Add(box);
+                if(boxPreCount > maxBox)
+                {
+                    boxPreCount = 0;
+                }
 
             }
         }
@@ -152,14 +157,13 @@ public class GameManager : MonoBehaviour
                 boxList.RemoveAt(i);
             }
         }
+        boxPreCount--;
     }
 
     public void ActivateLocation()
     {
         if (activeLocationsCount < maxBox)
         {
-            
-
             for(int i = 0; i < 100; i++)
             {
                 int index = Random.Range(0, deliveryPoints.Length);

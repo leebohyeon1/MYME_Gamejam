@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5556879857594303708}
   - component: {fileID: 2591999575624807423}
   - component: {fileID: 1607625220856020340}
-  - component: {fileID: 7787479633930178426}
+  - component: {fileID: 5463631443917803845}
   m_Layer: 6
-  m_Name: Box
+  m_Name: Box 1
   m_TagString: Box
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5556879857594303708
 SpriteRenderer:
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 9e4973db7e03c3243b12f7fb5b2d9eef, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9f2c8ed5937e4344e89f1e0b7b19514f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,7 +122,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.6396555, y: 0.48146516}
+    pivot: {x: 0.5, y: 0.62267786}
     oldSize: {x: 1, y: 2.1875}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e70bb53a315df3245940b4c5c9b1612b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!50 &7787479633930178426
+--- !u!50 &5463631443917803845
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0

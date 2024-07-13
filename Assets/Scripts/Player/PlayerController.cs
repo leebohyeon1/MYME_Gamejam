@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject[] BoxParents;
     public float speed = 5f;
 
     public int maxBox = 3;
@@ -15,6 +16,10 @@ public class PlayerController : MonoBehaviour
     Animator animator;
 
     bool isDead;
+    bool isDash;
+    float timer = 0;
+    public float throwForce = 10f; // 던지는 힘의 크기
+    public Vector3 throwDirectionRandomness = new Vector3(1, 1, 0);
 
     void Start()
     {
@@ -26,11 +31,27 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(!isDead && !GameManager.Instance.isCount)
+        if(!isDead && !GameManager.Instance.isCount && !isDash)
         {
             Move();
         }
         
+        if(Input.GetKeyDown(KeyCode.Space)) 
+        {
+            rb.AddForce(movement* 20, ForceMode2D.Impulse);
+            isDash = true;
+            GetComponent<Collider2D>().isTrigger = true;
+        }
+        if(isDash)
+        {
+            timer += Time.deltaTime;
+            if(timer>0.2f)
+            {
+                isDash = false;
+                GetComponent<Collider2D>().isTrigger = false;
+                timer = 0;
+            }
+        }
     }
 
     void Move()
@@ -62,15 +83,16 @@ public class PlayerController : MonoBehaviour
     }
     public void GetBox()
     {
-        curBox++;
+        
         GameManager.Instance.ActivateLocation();
+        curBox++;
     }
 
     public void DropBox()
     {
-        --curBox;
-        Destroy(transform.GetChild(curBox).gameObject);
-        GameManager.Instance.RemoveBoxList(transform.GetChild(curBox).gameObject);
+        curBox--;
+        Destroy(BoxParents[curBox].transform.GetChild(0).gameObject);
+        GameManager.Instance.RemoveBoxList(BoxParents[curBox].transform.GetChild(0).gameObject);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -78,6 +100,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             Die();
+
         }
       
     }
@@ -118,11 +141,59 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
+        if(isDash)
+        {
+            return;
+        }
         rb.velocity = Vector3.zero;
         GetComponent<Collider2D>().enabled = false;
         EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
         GameManager.Instance.isGameOver = true;
         isDead = true;
+
+        ThrowAllObjects();
+
     }
 
+    public void DeadForZombie(int i, GameObject Zombie)
+    {
+        if(i == 0)
+        {
+            animator.SetTrigger("isRightZombie");
+            Debug.Log("오른쪽");
+        }
+        else if (i == 1)
+        {
+            animator.SetTrigger("isLeftZombie");
+            Debug.Log("왼쪽");
+        }
+        StartCoroutine(DestroyZom(Zombie));
+    }
+
+    public IEnumerator DestroyZom(GameObject Zombie)
+    {
+        yield return new WaitForSeconds(0.2f);
+        DestroyImmediate(Zombie);
+    }
+
+    public void ThrowAllObjects()
+    {
+        for (int i = 0; i < curBox; i++)
+        {
+            Rigidbody2D rb = BoxParents[i].transform.GetChild(0).GetComponent<Rigidbody2D>();
+            BoxParents[i].transform.GetChild(0).transform.parent = null;
+            Vector3 throwDirection = CalculateThrowDirection();
+          
+            rb.AddForce(throwDirection * throwForce,ForceMode2D.Impulse);
+        }
+    }
+    
+
+    Vector3 CalculateThrowDirection()
+    {
+        float x = Random.Range(-throwDirectionRandomness.x, throwDirectionRandomness.x);
+        float y = Random.Range(-throwDirectionRandomness.y, throwDirectionRandomness.y); // 항상 위로 던져지도록
+        return new Vector3(x, y, 0).normalized;
+    }
 }
+

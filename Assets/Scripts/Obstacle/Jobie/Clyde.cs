@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
@@ -15,7 +16,9 @@ public class Clyde : MonoBehaviour
     private Vector3 randomMovePoint;
 
     private bool isScattering = false;
+    public bool isBite = false;
 
+    private const float MOVE_DELAY = 1f;
     void Start()
     {
         if (target == null)
@@ -30,38 +33,40 @@ public class Clyde : MonoBehaviour
 
     private void Update()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, target.transform.position);
-
-        if (distanceToPlayer > distance && isScattering == false)
+        if (!isBite)
         {
-            ChasePlayer();
-            if (target.transform.position.x - transform.position.x > 0)
+            float distanceToPlayer = Vector3.Distance(transform.position, target.transform.position);
+
+            if (distanceToPlayer > distance && isScattering == false)
             {
-                GetComponent<SpriteRenderer>().flipX = true;
+                ChasePlayer();
+                if (target.transform.position.x - transform.position.x > 0)
+                {
+                    GetComponent<SpriteRenderer>().flipX = true;
+                }
+                else
+                {
+                    GetComponent<SpriteRenderer>().flipX = false;
+                }
             }
             else
             {
-                GetComponent<SpriteRenderer>().flipX = false;
+                if (!isScattering)
+                {
+                    FindNewRandomPoint();
+                    isScattering = true;
+                }
+                MoveToRandomPoint();
+                if (randomMovePoint.x - transform.position.x > 0)
+                {
+                    GetComponent<SpriteRenderer>().flipX = true;
+                }
+                else
+                {
+                    GetComponent<SpriteRenderer>().flipX = false;
+                }
             }
         }
-        else
-        {
-            if (!isScattering)
-            {
-                FindNewRandomPoint();
-                isScattering = true;
-            }
-            MoveToRandomPoint();
-            if (randomMovePoint.x - transform.position.x > 0)
-            {
-                GetComponent<SpriteRenderer>().flipX = true;
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().flipX = false;
-            }
-        }
-
         
     }
 
@@ -96,5 +101,26 @@ public class Clyde : MonoBehaviour
             isScattering = false;
         }
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            isBite = true;
+            ProcessCollision(collision);
+        }
+    }
+
+    void ProcessCollision(Collision2D collision)
+    {
+        float targetOffsetX = (collision.transform.position.x - transform.position.x > 0) ? -1 : 1;
+        bool shouldFlip = collision.gameObject.GetComponent<SpriteRenderer>().flipX == false;
+
+        transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
+
+        collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
+    }
+
+  
 }
 

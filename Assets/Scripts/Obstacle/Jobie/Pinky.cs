@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +7,13 @@ using UnityEngine.AI;
 public class Pinky : MonoBehaviour
 {
     [SerializeField] GameObject target;
-
     NavMeshAgent agent;
+    SpriteRenderer spriteRenderer;
 
     public float distance = 4f;
+    public bool isBite = false;
+
+    private const float MOVE_DELAY = 1f;
 
     void Start()
     {
@@ -19,28 +23,45 @@ public class Pinky : MonoBehaviour
         }
 
         agent = GetComponent<NavMeshAgent>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        PinkyMove();
+        if (!isBite)
+        {
+            MoveTowardsPredictedPosition();
+        }
     }
 
-    void PinkyMove()
+    void MoveTowardsPredictedPosition()
     {
-        Vector2 Target = new Vector2(target.transform.position.x, target.transform.position.y) + (target.GetComponent<PlayerController>().GetVector() * distance);
-        agent.SetDestination(Target);
+        Vector2 predictedTargetPosition = new Vector2(target.transform.position.x, target.transform.position.y) + (target.GetComponent<PlayerController>().GetVector() * distance);
+        agent.SetDestination(predictedTargetPosition);
 
-        if (Target.x - transform.position.x > 0)
+        spriteRenderer.flipX = (predictedTargetPosition.x - transform.position.x > 0);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
         {
-            GetComponent<SpriteRenderer>().flipX = true;
-        }
-        else
-        {
-            GetComponent<SpriteRenderer>().flipX = false;
+            isBite = true;
+            ProcessCollision(collision);
         }
     }
+
+    void ProcessCollision(Collision2D collision)
+    {
+        float targetOffsetX = (collision.transform.position.x - transform.position.x > 0) ? -1 : 1;
+        bool shouldFlip = collision.gameObject.GetComponent<SpriteRenderer>().flipX == false;
+
+        transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
+
+        collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
+    }
+
 }
