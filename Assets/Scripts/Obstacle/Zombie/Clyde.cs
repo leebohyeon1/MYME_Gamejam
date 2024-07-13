@@ -1,155 +1,157 @@
 using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Clyde : MonoBehaviour, IListener
 {
-    [SerializeField] GameObject target;
+    [SerializeField] private GameObject target;
 
-    NavMeshAgent agent;
-
-    public float distance = 8f;
-
+    private NavMeshAgent agent;
     private Vector3 randomMovePoint;
 
+    public float distance = 8f;
     private bool isScattering = false;
-    public bool isBite = false;
-    public bool canMove = false;
+    private bool isBite = false;
+    private bool canMove = false;
     private const float MOVE_DELAY = 1f;
-    void Start()
+
+    private void Start()
+    {
+        InitializeTarget();
+        StartMoveCoroutine();
+        InitializeAgent();
+        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
+    }
+
+    private void InitializeTarget()
     {
         if (target == null)
         {
             target = GameObject.FindGameObjectWithTag("Player");
         }
-        if (PlayerPrefs.HasKey("Count"))
-        {
-            if (PlayerPrefs.GetInt("Count") == 1)
-            {
-                StartCoroutine(Move(3f));
-            }
-            else
-            {
-                StartCoroutine(Move(0.1f));
-            }
-        }
-        else
-        {
-            StartCoroutine(Move(0.1f));
-        }
-        EventManager.Instance.AddListener(EVENT_TYPE.DEAD, this);
+    }
+
+    private void StartMoveCoroutine()
+    {
+        float delay = PlayerPrefs.HasKey("Count") && PlayerPrefs.GetInt("Count") == 1 ? 3f : 0.1f;
+        StartCoroutine(MoveAfterDelay(delay));
+    }
+
+    private void InitializeAgent()
+    {
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
     }
-    public void OnEvent(EVENT_TYPE Event_Type, Component Sender, object Param = null)
+
+    public void OnEvent(EVENT_TYPE eventType, Component sender, object param = null)
+    {
+        if (eventType == EVENT_TYPE.DEAD)
+        {
+            StopAgentMovement();
+        }
+    }
+
+    private void StopAgentMovement()
     {
         agent.ResetPath();
         canMove = false;
     }
-    IEnumerator Move(float i)
+
+    private IEnumerator MoveAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(i);
+        yield return new WaitForSeconds(delay);
         canMove = true;
     }
+
     private void Update()
     {
-        if (!canMove)
+        if (!canMove || isBite)
         {
             return;
         }
-        if (!isBite)
-        {
-            float distanceToPlayer = Vector3.Distance(transform.position, target.transform.position);
 
-            if (distanceToPlayer > distance && isScattering == false)
-            {
-                ChasePlayer();
-                if (target.transform.position.x - transform.position.x > 0)
-                {
-                    GetComponent<SpriteRenderer>().flipX = true;
-                }
-                else
-                {
-                    GetComponent<SpriteRenderer>().flipX = false;
-                }
-            }
-            else
-            {
-                if (!isScattering)
-                {
-                    FindNewRandomPoint();
-                    isScattering = true;
-                }
-                MoveToRandomPoint();
-                if (randomMovePoint.x - transform.position.x > 0)
-                {
-                    GetComponent<SpriteRenderer>().flipX = true;
-                }
-                else
-                {
-                    GetComponent<SpriteRenderer>().flipX = false;
-                }
-            }
+        float distanceToPlayer = Vector3.Distance(transform.position, target.transform.position);
+
+        if (distanceToPlayer > distance && !isScattering)
+        {
+            ChasePlayer();
         }
-        
+        else
+        {
+            if (!isScattering)
+            {
+                FindNewRandomPoint();
+                isScattering = true;
+            }
+            MoveToRandomPoint();
+        }
+        UpdateSpriteDirection(distanceToPlayer > distance ? target.transform.position : randomMovePoint);
     }
 
-    void ChasePlayer()
+    private void ChasePlayer()
     {
         agent.SetDestination(target.transform.position);
-         // 추적 상태 재설정
     }
 
-    void FindNewRandomPoint()
+    private void FindNewRandomPoint()
     {
-        float randomX = Random.Range(-50.0f, 50.0f);
-        float randomY = Random.Range(-50.0f, 50.0f);
-        randomMovePoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomY);
-        // 유효한 NavMesh 위치를 찾을 때까지 반복
+        randomMovePoint = GenerateRandomNavMeshPoint();
+    }
+
+    private Vector3 GenerateRandomNavMeshPoint()
+    {
+        Vector3 randomPoint;
         NavMeshHit hit;
-        while (!NavMesh.SamplePosition(randomMovePoint, out hit, 1.0f, NavMesh.AllAreas))
+
+        do
         {
-            randomX = Random.Range(-50.0f, 50.0f);
-            randomY = Random.Range(-50.0f, 50.0f);
-            randomMovePoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomY);
+            float randomX = Random.Range(-50.0f, 50.0f);
+            float randomY = Random.Range(-50.0f, 50.0f);
+            randomPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomY);
         }
-        randomMovePoint = hit.position;
+        while (!NavMesh.SamplePosition(randomPoint, out hit, 1.0f, NavMesh.AllAreas));
+
+        return hit.position;
     }
 
-    void MoveToRandomPoint()
+    private void MoveToRandomPoint()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, randomMovePoint);
         agent.SetDestination(randomMovePoint);
-        if(distanceToPlayer < 4f)
+        float distanceToPoint = Vector3.Distance(transform.position, randomMovePoint);
+
+        if (distanceToPoint < 4f)
         {
             isScattering = false;
         }
+    }
+
+    private void UpdateSpriteDirection(Vector3 targetPosition)
+    {
+        GetComponent<SpriteRenderer>().flipX = targetPosition.x - transform.position.x > 0;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            isBite = true;
-            ProcessCollision(collision);
+            HandleCollisionWithPlayer(collision);
         }
     }
 
-    void ProcessCollision(Collision2D collision)
+    private void HandleCollisionWithPlayer(Collision2D collision)
     {
-        float targetOffsetX = (collision.transform.position.x - transform.position.x > 0) ? -1 : 1;
-        bool shouldFlip = collision.gameObject.GetComponent<SpriteRenderer>().flipX == false;
-
-        transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
-
-        collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
+        isBite = true;
+        ProcessCollision(collision);
     }
 
-  
-}
+    private void ProcessCollision(Collision2D collision)
+    {
+        float targetOffsetX = collision.transform.position.x - transform.position.x > 0 ? -1 : 1;
+        bool shouldFlip = !collision.gameObject.GetComponent<SpriteRenderer>().flipX;
 
+        transform.DOMove(new Vector2(collision.transform.position.x + targetOffsetX, collision.transform.position.y), MOVE_DELAY);
+        collision.gameObject.GetComponent<PlayerController>().DeadForZombie(shouldFlip ? 0 : 1, gameObject);
+    }
+}
