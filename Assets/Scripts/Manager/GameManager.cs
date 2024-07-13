@@ -73,10 +73,7 @@ public class GameManager : MonoBehaviour
         InitializeSingleton();
         LoadPlayerData();
 
-        if (SceneManager.GetActiveScene().buildIndex != 0)
-        {
-            target = FindObjectOfType<PlayerController>().gameObject;
-        }
+        target = FindObjectOfType<PlayerController>().gameObject;
     }
 
     void Update()

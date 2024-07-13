@@ -40,7 +40,9 @@ public class TitleUI : MonoBehaviour
     {
         if (PlayerPrefs.HasKey("BestPlayer"))
         {
+            GameManager.Instance.BestPlayer = PlayerPrefs.GetString("BestPlayer");
             nameText.text = GameManager.Instance.BestPlayer;
+            GameManager.Instance.BestScore = PlayerPrefs.GetFloat("BestScore");
             score.text = GameManager.Instance.BestScore.ToString();
         }
     }

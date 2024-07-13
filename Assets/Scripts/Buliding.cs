@@ -40,11 +40,11 @@ public class Buliding : MonoBehaviour
 
        if(Player.position.y < child.position.y)
         {
-            transform.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = Player.GetComponent<SpriteRenderer>().sortingOrder-1;
         }
         else
         {
-            transform.GetComponent<SpriteRenderer>().sortingOrder = 3;
+            transform.GetComponent<SpriteRenderer>().sortingOrder = Player.GetComponent<SpriteRenderer>().sortingOrder + 1;
 
         }
     }
