@@ -73,7 +73,7 @@ public class GameUI : MonoBehaviour
             {
                 AudioManager.instance.PlaySfx(AudioManager.Sfx.JustScore);
             }
-            SetButtons(true);
+            StartCoroutine(SetButtons(true));
         }
 
         if (isTotalCalculated)
@@ -121,6 +121,14 @@ public class GameUI : MonoBehaviour
         if(nameInput.gameObject.activeSelf && Input.GetKeyDown(KeyCode.Return))
         {
             InputName();
+        }
+
+        if (Btn[0].gameObject.activeSelf)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                RetryBtn();
+            }
         }
     }
     public void InputName()
@@ -218,17 +226,12 @@ public class GameUI : MonoBehaviour
         {
             NameBar.SetActive(true);
         }
-        SetButtons(true);
+        StartCoroutine(SetButtons(true));
     }
 
-    private void AnimateScoreText()
+    public IEnumerator SetButtons(bool active)
     {
-       
-        BoxText2.rectTransform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
-    }
-
-    public void SetButtons(bool active)
-    {
+        yield return new WaitForSeconds(1f);
         foreach (var button in Btn)
         {
             button.gameObject.SetActive(active);

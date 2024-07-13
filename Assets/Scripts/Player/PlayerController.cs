@@ -16,8 +16,7 @@ public class PlayerController : MonoBehaviour
     Animator animator;
 
     bool isDead;
-    bool isDash;
-    float timer = 0;
+
     public float throwForce = 10f; // 던지는 힘의 크기
     public Vector3 throwDirectionRandomness = new Vector3(1, 1, 0);
 
@@ -31,27 +30,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if(!isDead && !GameManager.Instance.isCount && !isDash)
+        if(!isDead && !GameManager.Instance.isCount)
         {
             Move();
         }
-        
-        if(Input.GetKeyDown(KeyCode.Space)) 
-        {
-            rb.AddForce(movement* 20, ForceMode2D.Impulse);
-            isDash = true;
-            GetComponent<Collider2D>().isTrigger = true;
-        }
-        if(isDash)
-        {
-            timer += Time.deltaTime;
-            if(timer>0.2f)
-            {
-                isDash = false;
-                GetComponent<Collider2D>().isTrigger = false;
-                timer = 0;
-            }
-        }
+
     }
 
     void Move()
@@ -142,10 +125,6 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        if(isDash)
-        {
-            return;
-        }
         rb.velocity = Vector3.zero;
         GetComponent<Collider2D>().enabled = false;
         EventManager.Instance.PostNotification(EVENT_TYPE.DEAD, this);
