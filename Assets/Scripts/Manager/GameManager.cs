@@ -184,36 +184,42 @@ public class GameManager : MonoBehaviour
 
     public void SpawnBadBox()
     {
-        badBoxTimer = 0f;
-        int ranPoints = 0;
-        for (int i = 0; i < 100; i++)
+        if (boxList.Count < maxBox)
         {
-            ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
-            if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+            badBoxTimer = 0f;
+            int ranPoints = 0;
+            for (int i = 0; i < 100; i++)
             {
-                break;
+                ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+                if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+                {
+                    break;
+                }
             }
+            GameObject box = Instantiate(boxPrefab[4], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+            box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
+            boxList.Add(box);
         }
-        GameObject box = Instantiate(boxPrefab[4], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
-        box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
-        boxList.Add(box);
     }
 
     public void SpawnGoodBox()
     {
-        goodBoxTimer = 0f;
-        int ranPoints = 0;
-        for (int i = 0; i < 100; i++)
+        if (boxList.Count < maxBox)
         {
-            ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
-            if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+            goodBoxTimer = 0f;
+            int ranPoints = 0;
+            for (int i = 0; i < 100; i++)
             {
-                break;
+                ranPoints = Random.Range(0, ST_BoxSpawnPoints.Length);
+                if (ST_BoxSpawnPoints[ranPoints].transform.childCount == 0)
+                {
+                    break;
+                }
             }
+            GameObject box = Instantiate(boxPrefab[5], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
+            box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
+            boxList.Add(box);
         }
-        GameObject box = Instantiate(boxPrefab[5], ST_BoxSpawnPoints[ranPoints].transform.position, Quaternion.identity);
-        box.transform.SetParent(ST_BoxSpawnPoints[ranPoints].transform);
-        boxList.Add(box);
     }
 
     public void RemoveBoxList(GameObject box)
