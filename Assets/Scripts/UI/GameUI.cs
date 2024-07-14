@@ -75,11 +75,11 @@ public class GameUI : MonoBehaviour
             InputName();
 
         }
-        if (nameInput.gameObject.activeSelf)
+        if(!NameBar.activeSelf)
         {
-            return;
+            HandleButtonInput();
         }
-        HandleButtonInput();
+     
     }
 
     private void HandleBestScoreDisplay()

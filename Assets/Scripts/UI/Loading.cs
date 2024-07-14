@@ -8,6 +8,9 @@ public class Loading : MonoBehaviour
     public TMP_Text Press;
     public TMP_Text LoadingText;
 
+    public TMP_Text[] Texts;
+    public TMP_Text loadingText;
+
     private bool isLoad = false;
     private float timer = 0f;
     private float alpha = 0f;
@@ -20,6 +23,8 @@ public class Loading : MonoBehaviour
     void Start()
     {
         Press.color = new Color(1, 1, 1, 0);
+        int a = Random.Range(0, Texts.Length);
+        loadingText.text = Texts[a].text;
     }
 
     void Update()
